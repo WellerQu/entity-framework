@@ -3,7 +3,7 @@
 import { BaseEntity, mapping } from '../src'
 
 describe('serialize', () => {
-  it('serialize the same name with the mapping annotation', () => {
+  it('使用mapping注解时, 序列化实例成同构数据', () => {
     class ResponseData<T> extends BaseEntity {
       @mapping()
       public data?: T
@@ -29,7 +29,7 @@ describe('serialize', () => {
     expect(data).toEqual({ data: true, msg: 'success', code: 0 })
   })
 
-  it('serialize the different name fields with the mapping annotation', () => {
+  it('使用mapping注解时, 序列化实例成异构数据', () => {
     class ResponseData<T> extends BaseEntity {
       @mapping()
       public data?: T

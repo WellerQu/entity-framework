@@ -1,19 +1,27 @@
-import { EntityMetadata } from './EntityMetadata'
-
 export class MetadataContext {
-  private entitiesMap: Record<string, metadata.Entity | undefined> = {}
+  static instance = new MetadataContext()
+
+  private entitiesMap: Map<string, metadata.Entity>
+
+  private constructor() {
+    this.entitiesMap = new Map<string, metadata.Entity>()
+  }
 
   getEntity(key: string): metadata.Entity | undefined {
-    return this.entitiesMap[key]
+    return this.entitiesMap.get(key)
   }
 
   setEntity(key: string, entity: metadata.Entity): void {
-    this.entitiesMap[key] = entity
+    this.entitiesMap.set(key, entity)
   }
 
-  createEntity(entityName: string): metadata.Entity {
-    return new EntityMetadata(entityName)
+  aliasEntity(origin: string, alias: string): void {
+    const entity = this.entitiesMap.get(origin)
+
+    if (!entity) {
+      return
+    }
+
+    this.entitiesMap.set(alias, entity)
   }
 }
-
-export const context = new MetadataContext()

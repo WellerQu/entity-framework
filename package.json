@@ -14,11 +14,14 @@
   },
   "author": "nixon",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "jsonpath": "^1.1.1"
+  },
   "devDependencies": {
     "@commitlint/cli": "^12.1.1",
     "@commitlint/config-conventional": "^12.1.1",
     "@types/jest": "^26.0.24",
+    "@types/jsonpath": "^0.2.0",
     "@types/pegjs": "^0.10.2",
     "@typescript-eslint/eslint-plugin": "^4.14.0",
     "@typescript-eslint/parser": "^4.14.0",

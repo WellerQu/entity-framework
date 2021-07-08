@@ -1,9 +1,9 @@
 import { BatchExecutor } from '../metadata/BatchExecutor'
-import { context } from '../metadata/MetadataContext'
+import { MetadataContext } from '../metadata/MetadataContext'
 
 export class BaseEntity implements model.Entity {
   serialize(): model.Data {
-    const entity = context.getEntity(this.constructor.name)
+    const entity = MetadataContext.instance.getEntity(this.constructor.name)
     if (!entity) {
       return {}
     }
@@ -20,7 +20,7 @@ export class BaseEntity implements model.Entity {
   }
 
   deserialize(data: model.Data): model.Entity {
-    const entity = context.getEntity(this.constructor.name)
+    const entity = MetadataContext.instance.getEntity(this.constructor.name)
     if (!entity) {
       return this
     }

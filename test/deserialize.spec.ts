@@ -3,7 +3,7 @@
 import { BaseEntity, mapping } from '../src'
 
 describe('deserialize', () => {
-  it('deserialize the same name fields with the mapping annotation', () => {
+  it('使用mapping注解时, 反序列化同构数据到实例', () => {
     class ResponseData<T> extends BaseEntity {
       @mapping()
       public data?: T
@@ -28,7 +28,7 @@ describe('deserialize', () => {
     expect(res.others).toBeUndefined()
   })
 
-  it('deserialize the different name fields with the mapping annotation', () => {
+  it('使用mapping注解时, 反序列化异构数据到实例', () => {
     class ResponseData<T> extends BaseEntity {
       @mapping()
       public data?: T
