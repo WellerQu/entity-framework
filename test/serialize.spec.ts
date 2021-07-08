@@ -1,7 +1,6 @@
 /// <reference types="../typings/model" />
 
-import { BaseEntity } from '../src/models/BaseEntity'
-import { mapping } from '../src/annotations/mapping'
+import { BaseEntity, mapping } from '../src'
 
 describe('serialize', () => {
   it('serialize with the mapping annotation', () => {
@@ -22,9 +21,11 @@ describe('serialize', () => {
     res.code = 0
     res.data = true
     res.msg = 'success'
+    res.others = 'anything'
 
-    const data: model.Data = { data: true, msg: 'success', code: 0 }
+    const data: model.Data = res.serialize()
 
-    expect(res.serialize()).toEqual(data)
+    expect(data.others).toBeUndefined()
+    expect(data).toEqual({ data: true, msg: 'success', code: 0 })
   })
 })

@@ -1,7 +1,6 @@
 /// <reference types="../typings/model" />
 
-import { BaseEntity } from '../src/models/BaseEntity'
-import { mapping } from '../src/annotations/mapping'
+import { BaseEntity, mapping } from '../src'
 
 describe('deserialize', () => {
   it('deserialize with the mapping annotation', () => {
@@ -24,5 +23,6 @@ describe('deserialize', () => {
     res.deserialize(data)
 
     expect(res).toEqual(data)
+    expect(res.others).toBeUndefined()
   })
 })

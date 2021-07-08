@@ -1,3 +1,5 @@
 /// <reference types="../typings/model" />
 
-export {}
+export { mapping } from './annotations/mapping'
+
+export { BaseEntity} from './models/BaseEntity'
