@@ -1,0 +1,1 @@
+type JSONPath = string

@@ -1,6 +1,8 @@
 {
   // see https://www.typescriptlang.org/tsconfig to better understand tsconfigs
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "allowJs": true,
     "target": "es5",
     "lib": [
       "dom",
@@ -8,8 +10,6 @@
       "esnext"
     ],
     "module": "ESNext",
-    "allowJs": true,
-    "jsx": "react",
     "sourceMap": true,
     "strict": true,
     "moduleResolution": "node",
