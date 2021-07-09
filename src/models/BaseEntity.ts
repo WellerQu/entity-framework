@@ -1,7 +1,7 @@
 import { BatchExecutor } from '../metadata/BatchExecutor'
 import { MetadataContext } from '../metadata/MetadataContext'
 
-export class BaseEntity implements model.Entity {
+export abstract class BaseEntity implements model.Entity {
   serialize(): model.Data {
     const entity = MetadataContext.instance.getEntity(this.constructor.name)
     if (!entity) {
