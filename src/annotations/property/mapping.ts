@@ -5,9 +5,13 @@ import { MetadataContext } from '../../metadata/MetadataContext'
 import { Prepare } from '../Prepare'
 
 type MappingOptions = {
+  /**
+   * 映射路径(JSONPath)
+   */
   path: string
   /**
-   * 类型的名称, 例如: Metric 表示指标, 或者 Metric[] 表示指标数组, 如果缺省则认为是一个 Object 或 Object[]
+   * 关联模型的名称 
+   * 例如: Metric 表示指标, 或者 Metric[] 表示指标数组, 如果缺省则认为是一个 Object 或 Object[]
    */
   relatedEntityDescriptor?: string
 }
