@@ -1,0 +1,12 @@
+{
+  "extends": "./.eslintrc.json",
+  "rules": {
+    "no-console": "error",
+    "no-debugger": "error",
+    "no-alert": "error",
+    "camelcase": "error",
+    "@typescript-eslint/no-empty-interface": "error",
+    "@typescript-eslint/no-empty-function": "error",
+    "@typescript-eslint/no-unused-vars": "error"
+  }
+}
