@@ -1,8 +1,13 @@
 /// <reference types="../typings/model" />
 
 import { BaseEntity, mapping } from '../src'
+import { MetadataContext } from '../src/metadata/MetadataContext'
 
 describe('反序列化', () => {
+  beforeEach(() => {
+    MetadataContext.instance.clear()
+  })
+
   it('使用mapping注解时, 反序列化同构数据到实例', () => {
     class ResponseData<T> extends BaseEntity {
       @mapping()
@@ -112,5 +117,37 @@ describe('反序列化', () => {
     expect(logSource.categories?.[0]).toBeInstanceOf(Category)
     expect(logSource.categories?.[1].name).toBe('c2')
     expect(logSource.categories?.[1]).toBeInstanceOf(Category)
+  })
+
+  it('使用mapping注解时, 反序列化复合结构数组的特定位置到实例', () => {
+    class LogSource extends BaseEntity {
+      @mapping()
+      name?: string
+    }
+
+    class Category extends BaseEntity {
+      @mapping()
+      name?: string
+    }
+
+    class Rule extends BaseEntity {
+      // logSource 使用 filters 的第 0 位置
+      @mapping({ relatedEntityDescriptor: 'LogSource', path: '$.filters[0]' })
+      logSource?: LogSource
+
+      // category 使用 filters 的第 1 位置
+      @mapping({ relatedEntityDescriptor: 'Category', path: '$.filters[1]' })
+      category?: Category
+    }
+
+    const data: model.Data = {
+      filters: [{ 'name': 'logSource' }, { 'name': 'category' }]
+    }
+
+    const rule = new Rule()
+    rule.deserialize(data)
+
+    expect(rule.logSource?.name).toBe('logSource')
+    expect(rule.category?.name).toBe('category')
   })
 })

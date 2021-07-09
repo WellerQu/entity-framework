@@ -24,4 +24,8 @@ export class MetadataContext {
 
     this.entitiesMap.set(alias, entity)
   }
+
+  clear(): void {
+    this.entitiesMap.clear()
+  }
 }
