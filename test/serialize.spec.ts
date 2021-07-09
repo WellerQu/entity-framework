@@ -1,8 +1,13 @@
 /// <reference types="../typings/model" />
 
 import { BaseEntity, mapping } from '../src'
+import { MetadataContext } from '../src/metadata/MetadataContext'
 
 describe('序列化', () => {
+  beforeEach(() => {
+    MetadataContext.instance.clear()
+  })
+
   it('使用mapping注解时, 序列化实例成同构数据', () => {
     class ResponseData<T> extends BaseEntity {
       @mapping()
@@ -112,5 +117,40 @@ describe('序列化', () => {
     expect(data.categories).toHaveLength(2)
     expect(data.categories?.[0].name).toBe('c1')
     expect(data.categories?.[1].name).toBe('c2')
+  })
+
+  it('使用mapping注解时, 序列化实例到复合结构数组的特定位置', () => {
+    class LogSource extends BaseEntity {
+      @mapping()
+      name?: string
+    }
+
+    class Category extends BaseEntity {
+      @mapping()
+      name?: string
+    }
+
+    class Rule extends BaseEntity {
+      // logSource 使用 filters 的第 0 位置
+      @mapping({ relatedEntityDescriptor: 'LogSource', path: '$.filters[0]' })
+      logSource?: LogSource
+
+      // category 使用 filters 的第 1 位置
+      @mapping({ relatedEntityDescriptor: 'Category', path: '$.filters[1]' })
+      category?: Category
+    }
+
+    const rule = new Rule()
+
+    rule.logSource = new LogSource()
+    rule.logSource.name = 'logSource'
+
+    rule.category = new Category()
+    rule.category.name = 'category'
+
+    const data: model.Data = rule.serialize()
+
+    expect(data.filters?.[0].name).toBe('logSource')
+    expect(data.filters?.[1].name).toBe('category')
   })
 })
