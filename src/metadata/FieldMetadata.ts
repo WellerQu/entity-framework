@@ -1,11 +1,28 @@
 export class FieldMetadata implements metadata.Field {
   readonly name: string;
-  serializeCommands: metadata.Command[];
-  deserializeCommands: metadata.Command[];
+
+  private serializeCommands: metadata.Command[];
+  private deserializeCommands: metadata.Command[];
 
   constructor(name: string) {
     this.name = name
     this.serializeCommands = []
     this.deserializeCommands = []
+  }
+
+  getSerializeCommands(): metadata.Command[] {
+    return this.serializeCommands
+  }
+
+  getDeserializeCommands(): metadata.Command[] {
+    return this.deserializeCommands
+  }
+
+  appendSerializeCommand(command: metadata.Command): void {
+    this.serializeCommands.push(command)
+  }
+
+  appendDeserializeCommand(command: metadata.Command): void {
+    this.deserializeCommands.push(command)
   }
 }

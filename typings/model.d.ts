@@ -1,9 +1,10 @@
 namespace model {
-  export type Data = Record<string, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export type Data = Record<string, any>
 
   export interface Entity {
     serialize(): Data
-    deserialize(data: Data): Entity
+    deserialize(data: Data): void
   }
 }
 

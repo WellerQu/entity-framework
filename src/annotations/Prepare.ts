@@ -1,6 +1,6 @@
-import { EntityMetadata } from './EntityMetadata'
-import { FieldMetadata } from './FieldMetadata'
-import { MetadataContext } from './MetadataContext'
+import { EntityMetadata } from '../metadata/EntityMetadata'
+import { FieldMetadata } from '../metadata/FieldMetadata'
+import { MetadataContext } from '../metadata/MetadataContext'
 
 export class Prepare {
   private field: metadata.Field
@@ -12,7 +12,7 @@ export class Prepare {
 
     const entity = this.context.getEntity(entityName)
     if (!entity) {
-      this.entity = new EntityMetadata(entityName)
+      this.entity = new EntityMetadata(entityName, target)
       this.context.setEntity(entityName, this.entity)
     } else {
       this.entity = entity

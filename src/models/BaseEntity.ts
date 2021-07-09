@@ -11,7 +11,8 @@ export class BaseEntity implements model.Entity {
     const data: model.Data = {}
     const fields = entity.getFields()
     for (let i = 0; i < fields.length; i++) {
-      const executor = new BatchExecutor(fields[i].serializeCommands)
+      const commands = fields[i].getSerializeCommands()
+      const executor = new BatchExecutor(commands)
 
       executor.exec(data, this)
     }
@@ -27,7 +28,8 @@ export class BaseEntity implements model.Entity {
 
     const fields = entity.getFields()
     for (let i = 0; i < fields.length; i++) {
-      const executor = new BatchExecutor(fields[i].deserializeCommands)
+      const commands = fields[i].getDeserializeCommands()
+      const executor = new BatchExecutor(commands)
 
       executor.exec(data, this)
     }

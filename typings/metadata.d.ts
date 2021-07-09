@@ -1,15 +1,22 @@
 namespace metadata {
   export interface Entity{
-    name: string
+    readonly name: string
+
     getField(name: Field['name']): Field | undefined
     getFields(): Field[]
     setField(field: Field): void
+
+    createInstance<T extends model.Entity>(data?: model.Data): T
   }
 
   export interface Field {
     readonly name: string
-    serializeCommands: Command[]
-    deserializeCommands: Command[]
+
+    getSerializeCommands(): Command[]
+    getDeserializeCommands(): Command[]
+
+    appendSerializeCommand(command: Command): void
+    appendDeserializeCommand(command: Command): void
   }
 
   export interface Executor {

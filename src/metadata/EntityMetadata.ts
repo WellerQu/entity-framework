@@ -1,10 +1,23 @@
+/* eslint-disable @typescript-eslint/ban-types */
 export class EntityMetadata implements metadata.Entity {
-  name: string
+  readonly name: string
 
-  constructor(name: string) {
+  private fieldsMap: Record<metadata.Field['name'], metadata.Field | undefined> = {}
+
+  constructor(name: string, private prototype: object) {
     this.name = name
   }
-  private fieldsMap: Record<metadata.Field['name'], metadata.Field | undefined> = {}
+
+  createInstance<T extends model.Entity>(): T
+  createInstance<T extends model.Entity>(data?: model.Data): T {
+    const instance = Object.create(this.prototype) as T
+
+    if (data) {
+      instance.deserialize(data)
+    }
+
+    return instance
+  }
 
   getField(name: string): metadata.Field | undefined {
     return this.fieldsMap[name]
