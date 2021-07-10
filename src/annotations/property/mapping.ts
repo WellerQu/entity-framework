@@ -1,5 +1,5 @@
-import jp from 'jsonpath'
-import { AnnotationCommand } from '../../metadata/BaseCommand'
+import { OperationCommand } from '../../metadata/OperationCommand'
+import { accessor } from '../../accessor'
 
 import { MetadataContext } from '../../metadata/MetadataContext'
 import { Prepare } from '../Prepare'
@@ -30,7 +30,7 @@ export const mapping: MappingDecorator = options => (target, property) => {
   field.appendDeserializeCommand(deserializeCommand)
 }
 
-class MappingSerializeCommand extends AnnotationCommand {
+class MappingSerializeCommand extends OperationCommand {
   constructor(private options: MappingOptions, private field: metadata.Field) {
     super(0)
   }
@@ -53,7 +53,7 @@ class MappingSerializeCommand extends AnnotationCommand {
       }
 
       const origin = instances.map(item => item.serialize())
-      jp.value(data, this.options.path, origin)
+      accessor(data, this.options.path, origin)
     } else if (descriptor) {
       const relatedEntity = MetadataContext.instance.getEntity(descriptor)
 
@@ -62,14 +62,14 @@ class MappingSerializeCommand extends AnnotationCommand {
       }
 
       const instance = Reflect.get(entity, this.field.name) as model.Entity
-      jp.value(data, this.options.path, instance.serialize())
+      accessor(data, this.options.path, instance.serialize())
     } else {
-      jp.value(data, this.options.path, Reflect.get(entity, this.field.name))
+      accessor(data, this.options.path, Reflect.get(entity, this.field.name))
     }
   }
 }
 
-class MappingDeserializeCommand extends AnnotationCommand {
+class MappingDeserializeCommand extends OperationCommand {
   constructor(private options: MappingOptions, private field: metadata.Field) {
     super(0)
   }
@@ -85,7 +85,7 @@ class MappingDeserializeCommand extends AnnotationCommand {
         throw new Error(`${this.field.name} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
-      const origin = jp.value(data, this.options.path)
+      const origin = accessor(data, this.options.path)
       if (!Array.isArray(origin)) {
         throw new Error(`${this.field.name} 的映射数据不是数组`)
       }
@@ -103,11 +103,11 @@ class MappingDeserializeCommand extends AnnotationCommand {
       }
 
       const instance = relatedEntity.createInstance()
-      instance.deserialize(jp.value(data, this.options.path))
+      instance.deserialize(accessor(data, this.options.path))
 
       Reflect.set(entity, this.field.name, instance)
     } else {
-      Reflect.set(entity, this.field.name, jp.value(data, this.options.path))
+      Reflect.set(entity, this.field.name, accessor(data, this.options.path))
     }
   }
 }
