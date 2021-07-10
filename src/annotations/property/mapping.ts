@@ -1,5 +1,5 @@
 import { OperationCommand } from '../../metadata/OperationCommand'
-import { accessor } from '../../accessor'
+import { Accessor } from '../../accessor/Accessor'
 
 import { MetadataContext } from '../../metadata/MetadataContext'
 import { Prepare } from '../Prepare'
@@ -37,6 +37,7 @@ class MappingSerializeCommand extends OperationCommand {
 
   exec(data: model.Data, entity: model.Entity): void {
     const descriptor = this.options.relatedEntityDescriptor
+    const accessor = new Accessor(data, this.options.path)
 
     if (descriptor?.endsWith('[]')) {
       const relatedEntityName = descriptor.replace('[]', '')
@@ -53,7 +54,8 @@ class MappingSerializeCommand extends OperationCommand {
       }
 
       const origin = instances.map(item => item.serialize())
-      accessor(data, this.options.path, origin)
+
+      accessor.setValue(origin)
     } else if (descriptor) {
       const relatedEntity = MetadataContext.instance.getEntity(descriptor)
 
@@ -62,9 +64,10 @@ class MappingSerializeCommand extends OperationCommand {
       }
 
       const instance = Reflect.get(entity, this.field.name) as model.Entity
-      accessor(data, this.options.path, instance.serialize())
+
+      accessor.setValue(instance.serialize())
     } else {
-      accessor(data, this.options.path, Reflect.get(entity, this.field.name))
+      accessor.setValue(Reflect.get(entity, this.field.name))
     }
   }
 }
@@ -76,6 +79,7 @@ class MappingDeserializeCommand extends OperationCommand {
 
   exec(data: model.Data, entity: model.Entity): void {
     const descriptor = this.options.relatedEntityDescriptor
+    const accessor = new Accessor(data, this.options.path)
 
     if (descriptor?.endsWith('[]')) {
       const relatedEntityName = descriptor.replace('[]', '')
@@ -85,7 +89,7 @@ class MappingDeserializeCommand extends OperationCommand {
         throw new Error(`${this.field.name} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
-      const origin = accessor(data, this.options.path)
+      const origin = accessor.getValue<model.Data[]>()
       if (!Array.isArray(origin)) {
         throw new Error(`${this.field.name} 的映射数据不是数组`)
       }
@@ -103,11 +107,11 @@ class MappingDeserializeCommand extends OperationCommand {
       }
 
       const instance = relatedEntity.createInstance()
-      instance.deserialize(accessor(data, this.options.path))
+      instance.deserialize(accessor.getValue())
 
       Reflect.set(entity, this.field.name, instance)
     } else {
-      Reflect.set(entity, this.field.name, accessor(data, this.options.path))
+      Reflect.set(entity, this.field.name, accessor.getValue())
     }
   }
 }
