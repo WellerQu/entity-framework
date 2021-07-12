@@ -117,7 +117,7 @@ expect(res.others).toBeUndefined()
 
   | 数据访问路径 | 映射数据 | 说明 |
   | -- | -- | -- |
-  | @mapping({ path: 'id' }) | id | 如果类型成员字段与path一致, 可缺省 |
+  | @mapping({ path: 'id' }) | 1 | 如果类型成员字段与path一致, 可缺省 |
   | @mapping({ path: 'filters[0]' }) | { "name": "5天精通数据格式转换" } | 通过索引范文映射数据数组的特定位置 |
   | @mapping({ path: 'filters[1:]' }) | ["JavaScript...", "编译...", ...]  | filters数组的后6项数据 |
   | @mapping({ path: 'stores' }) | [{"id": 2, "name": "..."}, ...]  | stores数组的全部数据 |
