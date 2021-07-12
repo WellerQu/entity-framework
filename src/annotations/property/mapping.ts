@@ -47,7 +47,10 @@ class MappingSerializeCommand extends OperationCommand {
         throw new Error(`${this.field.name} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
-      const instances = Reflect.get(entity, this.field.name) as model.Entity[]
+      const instances = Reflect.get(entity, this.field.name) as model.Entity[] | undefined
+      if (!instances) {
+        return
+      }
       
       if (!Array.isArray(instances)) {
         throw new Error(`${this.field.name} 的实例数据不是数组`)
@@ -63,7 +66,10 @@ class MappingSerializeCommand extends OperationCommand {
         throw new Error(`${this.field.name} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
-      const instance = Reflect.get(entity, this.field.name) as model.Entity
+      const instance = Reflect.get(entity, this.field.name) as model.Entity | undefined
+      if (!instance) {
+        return
+      }
 
       accessor.setValue(instance.serialize())
     } else {
@@ -90,6 +96,10 @@ class MappingDeserializeCommand extends OperationCommand {
       }
 
       const origin = accessor.getValue<model.Data[]>()
+      if (origin === undefined) {
+        return
+      }
+
       if (!Array.isArray(origin)) {
         throw new Error(`${this.field.name} 的映射数据不是数组`)
       }
@@ -104,6 +114,11 @@ class MappingDeserializeCommand extends OperationCommand {
 
       if (!relatedEntity) {
         throw new Error(`描述的关联实体类型不存在: ${descriptor}`)
+      }
+
+      const value = accessor.getValue()
+      if (!value) {
+        return
       }
 
       const instance = relatedEntity.createInstance()
