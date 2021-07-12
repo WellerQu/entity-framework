@@ -216,5 +216,31 @@ describe('序列化', () => {
       expect(data.pattern.id).toBe(2)
       expect(data.pattern.name).toBe('P2')
     })
+
+    it('序列化示例到切片数据中', () => {
+      class Foo extends BaseEntity {
+        @mapping({ path: 'filters[0]' })
+        id?: number
+
+        @mapping({ path: 'filters[1]' })
+        name?: string
+
+        @mapping({ path: 'filters[2:3]' })
+        children?: string[]
+      }
+
+      const foo = new Foo()
+      foo.id = 1
+      foo.name = 'foo'
+      foo.children = ['Hello', 'World']
+
+      const data: model.Data = foo.serialize()
+
+      expect(data.filters).toHaveLength(3)
+      expect(data.filters[0]).toBe(1)
+      expect(data.filters[1]).toBe('foo')
+      expect(data.filters[2]).toBe('Hello')
+      // expect(data.filters[3]).toBe('World')
+    })
   })
 })

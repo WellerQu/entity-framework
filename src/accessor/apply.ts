@@ -40,10 +40,41 @@ export function apply(target: model.Data, expressions: accessor.Expression[], va
 
     return apply(target[expr.index], rest, value)
   } else if (isSliceExpression(expr)) {
-    const start = expr.slice[0] ?? 0
-    const end = expr.slice[1]
+    if (!Array.isArray(target)) {
+      throw new Error('无法从不是数组的数据中生成切片')
+    }
 
-    return
+    if (rest.length === 0 && value !== undefined) {
+      if (!Array.isArray(value)) {
+        throw new Error('无法将不是数组的数据赋值到切片')
+      }
+
+      const start = expr.slice[0] ?? 0
+      const end = expr.slice[1] ?? (start + value.length)
+
+      for (let i = start; i < end; i++) {
+        target[i] = value[i - start]
+      }
+
+      return
+    }
+
+    if (rest.length === 0) {
+      const start = expr.slice[0] ?? 0
+      const end = expr.slice[1]
+
+      return target.slice(start, end)
+    }
+
+    const start = expr.slice[0] ?? 0
+    const end = expr.slice[1] ?? target.length
+    const returnValue: unknown[] = []
+
+    for (let i = start; i < end; i++) {
+      returnValue.push(target[i], rest, value)
+    }
+
+    return returnValue
   }
 
   throw new Error(`未知的表达式: ${JSON.stringify(expr)}`)

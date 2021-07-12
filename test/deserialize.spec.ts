@@ -214,5 +214,35 @@ describe('反序列化', () => {
       expect(pattern.pattern?.name).toBe('P2')
       expect(pattern.pattern).toBeInstanceOf(Pattern)
     })
+
+    it('序列化示例到切片数据中', () => {
+      class Foo extends BaseEntity {
+        @mapping({ path: 'filters[0]' })
+        id?: number
+
+        @mapping({ path: 'filters[1]' })
+        name?: string
+
+        @mapping({ path: 'filters[2:3]' })
+        children?: string[]
+      }
+
+      const data: model.Data = {
+        filters: [
+          1,
+          'foo',
+          'Hello',
+          'World'
+        ]
+      }
+
+      const foo = new Foo()
+      foo.deserialize(data)
+
+      expect(foo.id).toBe(1)
+      expect(foo.name).toBe('foo')
+      expect(foo.children?.[0]).toBe('Hello')
+      expect(foo.children?.[1]).toBeUndefined()
+    })
   })
 })
