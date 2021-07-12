@@ -31,8 +31,5 @@
   "files": [
     "dist",
     "typings"
-  ],
-  "publishConfig": {
-    "registry": "https://nexus.bizseer.com/repository/npm-private"
-  }
+  ]
 }
