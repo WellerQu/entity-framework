@@ -164,11 +164,9 @@ describe('反序列化', () => {
       }
 
       class Rule extends BaseEntity {
-        // logSource 使用 filters 的第 0 位置
         @mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
         logSource?: LogSource
 
-        // category 使用 filters 的第 1 位置
         @mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1][2]' })
         category?: Category
       }
@@ -215,7 +213,7 @@ describe('反序列化', () => {
       expect(pattern.pattern).toBeInstanceOf(Pattern)
     })
 
-    it('序列化示例到切片数据中', () => {
+    it('反序列化混合切片数据到实例 [n:m]', () => {
       class Foo extends BaseEntity {
         @mapping({ path: 'filters[0]' })
         id?: number
@@ -243,6 +241,82 @@ describe('反序列化', () => {
       expect(foo.name).toBe('foo')
       expect(foo.children?.[0]).toBe('Hello')
       expect(foo.children?.[1]).toBeUndefined()
+    })
+
+    it('反序列化切片数据到实例 [:]', () => {
+      class Foo extends BaseEntity {
+        @mapping({ path: 'filters[:]' })
+        filters?: number[]
+      }
+
+      const data: model.Data = { filters: [1, 2, 3, 4, 5] }
+
+      const foo = new Foo()
+      foo.deserialize(data)
+
+      expect(foo.filters).toHaveLength(5)
+      expect(foo.filters?.[0]).toBe(1)
+      expect(foo.filters?.[1]).toBe(2)
+      expect(foo.filters?.[2]).toBe(3)
+      expect(foo.filters?.[3]).toBe(4)
+      expect(foo.filters?.[4]).toBe(5)
+    })
+
+    it('反序列化切片数据到实例 []', () => {
+      class Foo extends BaseEntity {
+        @mapping({ path: 'filters[]' })
+        filters?: number[]
+      }
+
+      const data: model.Data = { filters: [1, 2, 3, 4, 5] }
+
+      const foo = new Foo()
+      foo.deserialize(data)
+
+      expect(foo.filters).toHaveLength(5)
+      expect(foo.filters?.[0]).toBe(1)
+      expect(foo.filters?.[1]).toBe(2)
+      expect(foo.filters?.[2]).toBe(3)
+      expect(foo.filters?.[3]).toBe(4)
+      expect(foo.filters?.[4]).toBe(5)
+    })
+
+    it('反序列化切片数据到实例 [n:]', () => {
+      class Foo extends BaseEntity {
+        @mapping({ path: 'filters[2:]' })
+        filters?: number[]
+      }
+
+      const data: model.Data = { filters: [undefined, undefined, 1, 2, 3, 4, 5] }
+
+      const foo = new Foo()
+      foo.deserialize(data)
+
+      expect(foo.filters).toHaveLength(5)
+      expect(foo.filters?.[0]).toBe(1)
+      expect(foo.filters?.[1]).toBe(2)
+      expect(foo.filters?.[2]).toBe(3)
+      expect(foo.filters?.[3]).toBe(4)
+      expect(foo.filters?.[4]).toBe(5)
+    })
+
+    it('反序列化切片数据到实例 [:m]', () => {
+      class Foo extends BaseEntity {
+        @mapping({ path: 'filters[:4]' })
+        filters?: number[]
+      }
+
+      const data: model.Data = { filters: [1, 2, 3, 4, 5] }
+
+      const foo = new Foo()
+      foo.deserialize(data)
+
+      expect(foo.filters).toHaveLength(4)
+      expect(foo.filters?.[0]).toBe(1)
+      expect(foo.filters?.[1]).toBe(2)
+      expect(foo.filters?.[2]).toBe(3)
+      expect(foo.filters?.[3]).toBe(4)
+      expect(foo.filters?.[4]).toBeUndefined()
     })
   })
 })

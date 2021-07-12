@@ -167,11 +167,9 @@ describe('序列化', () => {
       }
 
       class Rule extends BaseEntity {
-        // logSource 使用 filters 的第 0 位置
         @mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
         logSource?: LogSource
 
-        // category 使用 filters 的第 1 位置
         @mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1][2]' })
         category?: Category
       }
@@ -217,7 +215,7 @@ describe('序列化', () => {
       expect(data.pattern.name).toBe('P2')
     })
 
-    it('序列化示例到切片数据中', () => {
+    it('序列化实例到混合切片数据 [n:m]', () => {
       class Foo extends BaseEntity {
         @mapping({ path: 'filters[0]' })
         id?: number
@@ -240,7 +238,85 @@ describe('序列化', () => {
       expect(data.filters[0]).toBe(1)
       expect(data.filters[1]).toBe('foo')
       expect(data.filters[2]).toBe('Hello')
-      // expect(data.filters[3]).toBe('World')
+      expect(data.filters[3]).toBeUndefined()
+    })
+
+    it('序列化实例到切片数据 [:]', () => {
+      class Foo extends BaseEntity {
+        @mapping({ path: 'filters[:]' })
+        filters?: number[]
+      }
+
+      const foo = new Foo()
+      foo.filters = [1, 2, 3, 4, 5]
+
+      const data: model.Data = foo.serialize()
+
+      expect(data.filters).toHaveLength(5)
+      expect(data.filters[0]).toBe(1)
+      expect(data.filters[1]).toBe(2)
+      expect(data.filters[2]).toBe(3)
+      expect(data.filters[3]).toBe(4)
+      expect(data.filters[4]).toBe(5)
+    })
+
+    it('序列化实例到切片数据 []', () => {
+      class Foo extends BaseEntity {
+        @mapping({ path: 'filters[]' })
+        filters?: number[]
+      }
+
+      const foo = new Foo()
+      foo.filters = [1, 2, 3, 4, 5]
+
+      const data: model.Data = foo.serialize()
+
+      expect(data.filters).toHaveLength(5)
+      expect(data.filters[0]).toBe(1)
+      expect(data.filters[1]).toBe(2)
+      expect(data.filters[2]).toBe(3)
+      expect(data.filters[3]).toBe(4)
+      expect(data.filters[4]).toBe(5)
+    })
+
+    it('序列化实例到切片数据 [n:]', () => {
+      class Foo extends BaseEntity {
+        @mapping({ path: 'filters[2:]' })
+        filters?: number[]
+      }
+
+      const foo = new Foo()
+      foo.filters = [1, 2, 3, 4, 5]
+
+      const data: model.Data = foo.serialize()
+
+      expect(data.filters).toHaveLength(7)
+      expect(data.filters[0]).toBeUndefined()
+      expect(data.filters[1]).toBeUndefined()
+      expect(data.filters[2]).toBe(1)
+      expect(data.filters[3]).toBe(2)
+      expect(data.filters[4]).toBe(3)
+      expect(data.filters[5]).toBe(4)
+      expect(data.filters[6]).toBe(5)
+    })
+
+    it('序列化实例到切片数据 [:m]', () => {
+      class Foo extends BaseEntity {
+        @mapping({ path: 'filters[:4]' })
+        filters?: number[]
+      }
+
+      const foo = new Foo()
+      foo.filters = [1, 2, 3, 4, 5]
+
+      const data: model.Data = foo.serialize()
+
+      expect(data.filters).toHaveLength(4)
+      expect(data.filters[0]).toBe(1)
+      expect(data.filters[1]).toBe(2)
+      expect(data.filters[2]).toBe(3)
+      expect(data.filters[3]).toBe(4)
+      expect(data.filters[4]).toBeUndefined()
     })
   })
 })
