@@ -1,4 +1,4 @@
-export abstract class AnnotationCommand implements metadata.Command {
+export abstract class OperationCommand implements metadata.Command {
   private $priority: number
   public get priority(): number {
     return this.$priority

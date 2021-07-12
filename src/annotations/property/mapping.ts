@@ -1,5 +1,5 @@
-import jp from 'jsonpath'
-import { AnnotationCommand } from '../../metadata/BaseCommand'
+import { OperationCommand } from '../../metadata/OperationCommand'
+import { Accessor } from '../../accessor/Accessor'
 
 import { MetadataContext } from '../../metadata/MetadataContext'
 import { Prepare } from '../Prepare'
@@ -19,7 +19,7 @@ type MappingOptions = {
 type MappingDecorator = (options?: Partial<MappingOptions>) => (target: model.Entity, property: string) => void
 
 export const mapping: MappingDecorator = options => (target, property) => {
-  const mergedOptions: MappingOptions = { ...options, path: options?.path ?? `$.${property}`, }
+  const mergedOptions: MappingOptions = { ...options, path: options?.path ?? property, }
   const prepare = new Prepare(MetadataContext.instance, target, property)
   const field = prepare.getField()
 
@@ -30,13 +30,14 @@ export const mapping: MappingDecorator = options => (target, property) => {
   field.appendDeserializeCommand(deserializeCommand)
 }
 
-class MappingSerializeCommand extends AnnotationCommand {
+class MappingSerializeCommand extends OperationCommand {
   constructor(private options: MappingOptions, private field: metadata.Field) {
     super(0)
   }
 
   exec(data: model.Data, entity: model.Entity): void {
     const descriptor = this.options.relatedEntityDescriptor
+    const accessor = new Accessor(data, this.options.path)
 
     if (descriptor?.endsWith('[]')) {
       const relatedEntityName = descriptor.replace('[]', '')
@@ -46,14 +47,18 @@ class MappingSerializeCommand extends AnnotationCommand {
         throw new Error(`${this.field.name} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
-      const instances = Reflect.get(entity, this.field.name) as model.Entity[]
+      const instances = Reflect.get(entity, this.field.name) as model.Entity[] | undefined
+      if (!instances) {
+        return
+      }
       
       if (!Array.isArray(instances)) {
         throw new Error(`${this.field.name} 的实例数据不是数组`)
       }
 
       const origin = instances.map(item => item.serialize())
-      jp.value(data, this.options.path, origin)
+
+      accessor.setValue(origin)
     } else if (descriptor) {
       const relatedEntity = MetadataContext.instance.getEntity(descriptor)
 
@@ -61,21 +66,26 @@ class MappingSerializeCommand extends AnnotationCommand {
         throw new Error(`${this.field.name} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
-      const instance = Reflect.get(entity, this.field.name) as model.Entity
-      jp.value(data, this.options.path, instance.serialize())
+      const instance = Reflect.get(entity, this.field.name) as model.Entity | undefined
+      if (!instance) {
+        return
+      }
+
+      accessor.setValue(instance.serialize())
     } else {
-      jp.value(data, this.options.path, Reflect.get(entity, this.field.name))
+      accessor.setValue(Reflect.get(entity, this.field.name))
     }
   }
 }
 
-class MappingDeserializeCommand extends AnnotationCommand {
+class MappingDeserializeCommand extends OperationCommand {
   constructor(private options: MappingOptions, private field: metadata.Field) {
     super(0)
   }
 
   exec(data: model.Data, entity: model.Entity): void {
     const descriptor = this.options.relatedEntityDescriptor
+    const accessor = new Accessor(data, this.options.path)
 
     if (descriptor?.endsWith('[]')) {
       const relatedEntityName = descriptor.replace('[]', '')
@@ -85,7 +95,11 @@ class MappingDeserializeCommand extends AnnotationCommand {
         throw new Error(`${this.field.name} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
-      const origin = jp.value(data, this.options.path)
+      const origin = accessor.getValue<model.Data[]>()
+      if (origin === undefined) {
+        return
+      }
+
       if (!Array.isArray(origin)) {
         throw new Error(`${this.field.name} 的映射数据不是数组`)
       }
@@ -102,12 +116,17 @@ class MappingDeserializeCommand extends AnnotationCommand {
         throw new Error(`描述的关联实体类型不存在: ${descriptor}`)
       }
 
+      const value = accessor.getValue()
+      if (!value) {
+        return
+      }
+
       const instance = relatedEntity.createInstance()
-      instance.deserialize(jp.value(data, this.options.path))
+      instance.deserialize(accessor.getValue())
 
       Reflect.set(entity, this.field.name, instance)
     } else {
-      Reflect.set(entity, this.field.name, jp.value(data, this.options.path))
+      Reflect.set(entity, this.field.name, accessor.getValue())
     }
   }
 }
