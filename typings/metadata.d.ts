@@ -28,3 +28,5 @@ namespace metadata {
     exec(data: model.Data, entity: model.Entity): void
   }
 }
+
+export as namespace metadata

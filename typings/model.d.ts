@@ -7,3 +7,5 @@ namespace model {
     deserialize(data: Data): void
   }
 }
+
+export as namespace model

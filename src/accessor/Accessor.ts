@@ -1,17 +1,18 @@
-import { parse } from "./parser"
+import { apply } from './apply'
+import { parse } from './parser'
 
 export class Accessor {
-  private expressions: accessor.Expression
+  private expressions: accessor.Expression[]
 
-  constructor(private target: object, path: string) {
+  constructor(private target: model.Data, path: string) {
     this.expressions = parse(path)
   }
 
-  setValue<T>(value: T): void {
-    
+  setValue(value: unknown): void {
+    apply(this.target, this.expressions, value)
   }
 
   getValue<T>(): T {
-    return {} as T
+    return apply(this.target, this.expressions) as T
   }
 }

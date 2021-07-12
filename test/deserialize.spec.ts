@@ -69,7 +69,7 @@ describe('反序列化', () => {
     }
 
     class Metric extends BaseEntity {
-      @mapping({ path: '$.jar'})
+      @mapping({ path: 'jar'})
       bar?: string
     }
 
@@ -119,7 +119,7 @@ describe('反序列化', () => {
     expect(logSource.categories?.[1]).toBeInstanceOf(Category)
   })
 
-  it('使用mapping注解时, 反序列化复合结构数组的特定位置到实例', () => {
+  it('使用mapping注解时, 反序列化复合结构数组的特定位置到实例 [索引]', () => {
     class LogSource extends BaseEntity {
       @mapping()
       name?: string
@@ -132,11 +132,11 @@ describe('反序列化', () => {
 
     class Rule extends BaseEntity {
       // logSource 使用 filters 的第 0 位置
-      @mapping({ relatedEntityDescriptor: 'LogSource', path: '$.filters[0]' })
+      @mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0]' })
       logSource?: LogSource
 
       // category 使用 filters 的第 1 位置
-      @mapping({ relatedEntityDescriptor: 'Category', path: '$.filters[1]' })
+      @mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1]' })
       category?: Category
     }
 

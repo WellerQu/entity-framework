@@ -19,7 +19,7 @@ type MappingOptions = {
 type MappingDecorator = (options?: Partial<MappingOptions>) => (target: model.Entity, property: string) => void
 
 export const mapping: MappingDecorator = options => (target, property) => {
-  const mergedOptions: MappingOptions = { ...options, path: options?.path ?? `$.${property}`, }
+  const mergedOptions: MappingOptions = { ...options, path: options?.path ?? property, }
   const prepare = new Prepare(MetadataContext.instance, target, property)
   const field = prepare.getField()
 

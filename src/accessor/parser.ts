@@ -1,4 +1,4 @@
-import { lex, Token } from "./lexer"
+import { lex } from './lexer'
 
 /**
  * 解析数据访问路径 (Data Access Path)
@@ -26,30 +26,48 @@ import { lex, Token } from "./lexer"
  * @param path 数据访问路径
  * @returns 路径访问表达式
  */
-export function parse(path: string): accessor.Expression {
+export function parse(path: string): accessor.Expression[] {
   const tokens = lex(path)
   const analysis: accessor.Expression[] = []
 
-  for (let current of tokens) {
-    switch(current.type) {
-      case 'colon':
-        continue
-      case 'leftBracket':
-        break
-      case 'rightBracket':
-        break
-      case 'number':
-        break
-      case 'path':
-        break
+  for (let i = 0;i<tokens.length;i++) {
+    const current = tokens[i]
+
+    if (current.type === 'dot') {
+      continue
+    }
+    if (current.type === 'path') {
+      analysis.push({
+        path: current.term
+      })
+    }
+    else if (current.type === 'definitive') {
+      const top = analysis[analysis.length - 1]
+      if (!top) {
+        throw new Error('语法错误, 不是预期的栈顶')
+      }
+
+      const definitive = resolveDefinitive(current.term)
+      if (Array.isArray(definitive)) {
+        analysis.push({
+          slice: definitive
+        })
+      } else {
+        analysis.push({
+          index: definitive
+        })
+      }
+    }
+    else {
+      throw new Error(`未知的Token类型: ${current.type}`)
     }
   }
-
+ 
   if (analysis.length === 0) {
     throw new Error('无法解析路径表达式')
   }
 
-  return analysis[0]
+  return analysis
 }
 
 function toNumber(anything: unknown): number | undefined {
@@ -59,4 +77,23 @@ function toNumber(anything: unknown): number | undefined {
   }
 
   return num
+}
+
+function resolveDefinitive(term: string): accessor.IndexExpression['index'] | accessor.SliceExpression['slice'] {
+  const regExp = /^(-?\d+)?(:)?(-?\d+)?$/i
+  const matches = regExp.exec(term)
+
+  if (!matches) {
+    throw new Error(`限定语法错误: ${term}`)
+  }
+
+  const start = toNumber(matches[1])
+  const colon = matches[2]
+  const end = toNumber(matches[3])
+
+  if (start !== undefined && colon === undefined && end === undefined) {
+    return start
+  }
+  
+  return [start, end]
 }

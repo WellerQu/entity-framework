@@ -70,7 +70,7 @@ describe('序列化', () => {
     }
 
     class Metric extends BaseEntity {
-      @mapping({ path: '$.jar'})
+      @mapping({ path: 'jar'})
       bar?: string
     }
 
@@ -132,11 +132,11 @@ describe('序列化', () => {
 
     class Rule extends BaseEntity {
       // logSource 使用 filters 的第 0 位置
-      @mapping({ relatedEntityDescriptor: 'LogSource', path: '$.filters[0]' })
+      @mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0]' })
       logSource?: LogSource
 
       // category 使用 filters 的第 1 位置
-      @mapping({ relatedEntityDescriptor: 'Category', path: '$.filters[1]' })
+      @mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1]' })
       category?: Category
     }
 
@@ -152,38 +152,5 @@ describe('序列化', () => {
 
     expect(data.filters?.[0].name).toBe('logSource')
     expect(data.filters?.[1].name).toBe('category')
-  })
-
-  it('使用mapping注解时, 序列化实例到复合结构数组的特定位置 [条件]', () => {
-    class LogSource extends BaseEntity {
-      @mapping()
-      name?: string
-    }
-
-    class Category extends BaseEntity {
-      @mapping()
-      name?: string
-    }
-
-    class Rule extends BaseEntity {
-      // logSource 使用 filters 的第 0 位置
-      @mapping({ relatedEntityDescriptor: 'LogSource', path: '$.filters[?(@.name=="logSource")]' })
-      logSource?: LogSource
-
-      // category 使用 filters 的第 1 位置
-      @mapping({ relatedEntityDescriptor: 'Category', path: '$.filters[?(@.name=="category")]' })
-      category?: Category
-    }
-
-    const rule = new Rule()
-    rule.logSource = new LogSource()
-    rule.logSource.name = 'logSource'
-    rule.category = new Category()
-    rule.category.name = 'category'
-
-    const data: model.Data = rule.serialize()
-
-    // eslint-disable-next-line no-console
-    console.log(data)
   })
 })

@@ -1,37 +1,28 @@
-enum TokenType {
-  path = 'path',
-  leftBracket = 'leftBracket',
-  rightBracket = 'rightBracket',
-  number = 'number',
-  colon = 'colon'
-}
-
+type TokenType = 'path' | 'definitive' | 'dot'
 type GroupIndex = number
+
 /**
  * 词法定义
  */
-const defines: [keyof typeof TokenType, RegExp, GroupIndex][] = [
+const defines: [TokenType, RegExp, GroupIndex][] = [
   ['path', /^(\w+)/, 1],
-  ['leftBracket', /^(\[)/, 1],
-  ['rightBracket', /^(\])/, 1],
-  ['number', /^(-?\d+)/, 1],
-  ['colon', /^(:)/, 1]
+  ['dot', /^(\.)/, 1],
+  ['definitive', /^(\[([^\]]*)\])/, 2]
 ]
 
 export interface Token {
-  type: keyof typeof TokenType,
+  type: TokenType,
   term: string
-  startIndex: number
-  length: number
 }
 
 /**
  * 路径表达式分词器
  * @param source 原文字符串
  */
-export function* lex(source: string): Generator<Token, void, Token | undefined> {
-  let str = source
+export function lex(source: string): Token[] {
+  const tokens: Token[] = []
 
+  let str = source
   while(str.length) {
     const size = str.length
 
@@ -45,18 +36,18 @@ export function* lex(source: string): Generator<Token, void, Token | undefined> 
 
       const token: Token = {
         type: type,
-        term: matches[groupIndex],
-        startIndex: source.length - str.length,
-        length: matches[groupIndex].length
+        term: matches[groupIndex]
       }
 
-      str = str.slice(token.length)
+      str = str.slice(matches[1].length)
 
-      yield token
+      tokens.push(token)
     }
 
     if (size === str.length) {
       throw new Error(`遇见未定义的词: ${str}`)
     }
   }
+
+  return tokens
 }
