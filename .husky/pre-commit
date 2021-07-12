@@ -1,5 +1,5 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# npx lint-staged
-# npx jest --clearCache && npm test
+npx lint-staged
+npx jest --clearCache && npm test
