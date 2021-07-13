@@ -2,4 +2,4 @@
 
 export { mapping } from './annotations/property/mapping'
 
-export { BaseEntity} from './models/BaseEntity'
+export { Entity } from './models/Entity'
