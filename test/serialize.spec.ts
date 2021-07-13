@@ -1,6 +1,6 @@
 /// <reference types="../typings/model" />
 
-import { BaseEntity, mapping } from '../src'
+import { Entity, mapping } from '../src'
 import { MetadataContext } from '../src/metadata/MetadataContext'
 
 describe('序列化', () => {
@@ -10,7 +10,7 @@ describe('序列化', () => {
 
   describe('@mapping()', () => {
     it('序列化实例成同构数据', () => {
-      class ResponseData<T> extends BaseEntity {
+      class ResponseData<T> extends Entity {
         @mapping()
         public data?: T
 
@@ -36,7 +36,7 @@ describe('序列化', () => {
     })
 
     it('序列化实例成异构数据', () => {
-      class ResponseData<T> extends BaseEntity {
+      class ResponseData<T> extends Entity {
         @mapping()
         public data?: T
 
@@ -54,7 +54,7 @@ describe('序列化', () => {
     })
 
     it('序列化实例到同构复合结构数据', () => {
-      class Pattern extends BaseEntity {
+      class Pattern extends Entity {
         @mapping()
         public id?: number
 
@@ -62,7 +62,7 @@ describe('序列化', () => {
         public strategy?: Strategy
       }
 
-      class Strategy extends BaseEntity {
+      class Strategy extends Entity {
         @mapping()
         name?: string
 
@@ -70,7 +70,7 @@ describe('序列化', () => {
         metric?: Metric
       }
 
-      class Metric extends BaseEntity {
+      class Metric extends Entity {
         @mapping({ path: 'jar' })
         bar?: string
       }
@@ -90,7 +90,7 @@ describe('序列化', () => {
     })
 
     it('序列化实例到同构复合结构数组', () => {
-      class LogSource extends BaseEntity {
+      class LogSource extends Entity {
         @mapping()
         name?: string
 
@@ -98,7 +98,7 @@ describe('序列化', () => {
         categories?: Category[]
       }
 
-      class Category extends BaseEntity {
+      class Category extends Entity {
         @mapping()
         name?: string
       }
@@ -121,17 +121,17 @@ describe('序列化', () => {
     })
 
     it('序列化实例到复合结构数组的特定位置 [n]', () => {
-      class LogSource extends BaseEntity {
+      class LogSource extends Entity {
         @mapping()
         name?: string
       }
 
-      class Category extends BaseEntity {
+      class Category extends Entity {
         @mapping()
         name?: string
       }
 
-      class Rule extends BaseEntity {
+      class Rule extends Entity {
         // logSource 使用 filters 的第 0 位置
         @mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0]' })
         logSource?: LogSource
@@ -156,17 +156,17 @@ describe('序列化', () => {
     })
 
     it('序列化实例到复合结构数组的特定位置 [n][m]', () => {
-      class LogSource extends BaseEntity {
+      class LogSource extends Entity {
         @mapping()
         name?: string
       }
 
-      class Category extends BaseEntity {
+      class Category extends Entity {
         @mapping()
         name?: string
       }
 
-      class Rule extends BaseEntity {
+      class Rule extends Entity {
         @mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
         logSource?: LogSource
 
@@ -189,7 +189,7 @@ describe('序列化', () => {
     })
 
     it('序列化递归数据结构', () => {
-      class Pattern extends BaseEntity {
+      class Pattern extends Entity {
         @mapping()
         id?: number
 
@@ -216,7 +216,7 @@ describe('序列化', () => {
     })
 
     it('序列化实例到混合切片数据 [n:m]', () => {
-      class Foo extends BaseEntity {
+      class Foo extends Entity {
         @mapping({ path: 'filters[0]' })
         id?: number
 
@@ -242,7 +242,7 @@ describe('序列化', () => {
     })
 
     it('序列化实例到切片数据 [:]', () => {
-      class Foo extends BaseEntity {
+      class Foo extends Entity {
         @mapping({ path: 'filters[:]' })
         filters?: number[]
       }
@@ -261,7 +261,7 @@ describe('序列化', () => {
     })
 
     it('序列化实例到切片数据 []', () => {
-      class Foo extends BaseEntity {
+      class Foo extends Entity {
         @mapping({ path: 'filters[]' })
         filters?: number[]
       }
@@ -280,7 +280,7 @@ describe('序列化', () => {
     })
 
     it('序列化实例到切片数据 [n:]', () => {
-      class Foo extends BaseEntity {
+      class Foo extends Entity {
         @mapping({ path: 'filters[2:]' })
         filters?: number[]
       }
@@ -301,7 +301,7 @@ describe('序列化', () => {
     })
 
     it('序列化实例到切片数据 [:m]', () => {
-      class Foo extends BaseEntity {
+      class Foo extends Entity {
         @mapping({ path: 'filters[:4]' })
         filters?: number[]
       }
@@ -317,6 +317,40 @@ describe('序列化', () => {
       expect(data.filters[2]).toBe(3)
       expect(data.filters[3]).toBe(4)
       expect(data.filters[4]).toBeUndefined()
+    })
+
+    it('序列化间接继承 Entity 的类型实例', () => {
+      class Foo extends Entity {
+        @mapping()
+        id?: number
+
+        @mapping()
+        name?: string
+      }
+
+      class Bar extends Foo {
+        @mapping()
+        tags?: string[]
+      }
+
+      class Taz extends Bar {
+        @mapping()
+        attr?: string
+      }
+
+      const taz = new Taz()
+      taz.attr = 'attr'
+      taz.tags = ['Hello', 'World']
+      taz.name = 'taz'
+      taz.id = 1
+
+      const data: model.Data = taz.serialize()
+
+      expect(data.id).toBe(1)
+      expect(data.name).toBe('taz')
+      expect(data.tags[0]).toBe('Hello')
+      expect(data.tags[1]).toBe('World')
+      expect(data.attr).toBe('attr')
     })
   })
 })

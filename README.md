@@ -6,10 +6,10 @@
 
 ## Basic Example
 
-一个类声明在继承 `BaseEntity` 后可视为一个模型声明, 该类声明的实例可以进行**序列化**与**反序列化**操作.
+一个类声明在继承 `Entity` 后可视为一个模型声明, 该类声明的实例可以进行**序列化**与**反序列化**操作.
 
 ```typescript
-class ResponseData<T> extends BaseEntity {
+class ResponseData<T> extends Entity {
   @mapping()
   public data?: T
 
@@ -65,7 +65,7 @@ expect(res.others).toBeUndefined()
 
 - 模型 Entity
 
-  继承自 `BaseEntity` 的类型声明, 拥有 `serialize` 与 `deserialize` 实例方法.
+  继承自 `Entity` 的类型声明, 拥有 `serialize` 与 `deserialize` 实例方法.
 
 - 注解 Annotation
 
@@ -125,7 +125,7 @@ expect(res.others).toBeUndefined()
 ## Recursive Data Structure
 
 ```typescript
-class Pattern extends BaseEntity {
+class Pattern extends Entity {
   @mapping()
   id?: number
 
@@ -154,17 +154,17 @@ expect(data.pattern.name).toBe('P2')
 ## Nested Array
 
 ```typescript
-class LogSource extends BaseEntity {
+class LogSource extends Entity {
   @mapping()
   name?: string
 }
 
-class Category extends BaseEntity {
+class Category extends Entity {
   @mapping()
   name?: string
 }
 
-class Rule extends BaseEntity {
+class Rule extends Entity {
   @mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
   logSource?: LogSource
 
@@ -189,7 +189,7 @@ expect(data.filters?.[1][2].name).toBe('category')
 ## Slice Array
 
 ```typescript
-class Foo extends BaseEntity {
+class Foo extends Entity {
   @mapping({ path: 'filters[0]' })
   id?: number
 
