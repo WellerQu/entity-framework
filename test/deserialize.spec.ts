@@ -1,6 +1,6 @@
 /// <reference types="../typings/model" />
 
-import { Entity, mapping } from '../src'
+import { Entity, Mapping } from '../src'
 import { MetadataContext } from '../src/metadata/MetadataContext'
 
 describe('反序列化', () => {
@@ -11,13 +11,13 @@ describe('反序列化', () => {
   describe('@mapping()', () => {
     it('反序列化同构数据到实例', () => {
       class ResponseData<T> extends Entity {
-        @mapping()
+        @Mapping()
         public data?: T
 
-        @mapping()
+        @Mapping()
         public msg?: string
 
-        @mapping()
+        @Mapping()
         public code?: number
 
         public others?: unknown
@@ -36,10 +36,10 @@ describe('反序列化', () => {
 
     it('反序列化异构数据到实例', () => {
       class ResponseData<T> extends Entity {
-        @mapping()
+        @Mapping()
         public data?: T
 
-        @mapping({ path: 'message' })
+        @Mapping({ path: 'message' })
         public msg?: string
       }
 
@@ -54,23 +54,23 @@ describe('反序列化', () => {
 
     it('反序列化同构复合结构数据到实例', () => {
       class Pattern extends Entity {
-        @mapping()
+        @Mapping()
         public id?: number
 
-        @mapping({ relatedEntityDescriptor: 'Strategy' })
+        @Mapping({ relatedEntityDescriptor: 'Strategy' })
         public strategy?: Strategy
       }
 
       class Strategy extends Entity {
-        @mapping()
+        @Mapping()
         name?: string
 
-        @mapping({ relatedEntityDescriptor: 'Metric' })
+        @Mapping({ relatedEntityDescriptor: 'Metric' })
         metric?: Metric
       }
 
       class Metric extends Entity {
-        @mapping({ path: 'jar' })
+        @Mapping({ path: 'jar' })
         bar?: string
       }
 
@@ -88,15 +88,15 @@ describe('反序列化', () => {
 
     it('反序列化同构复合结构数组到实例', () => {
       class LogSource extends Entity {
-        @mapping()
+        @Mapping()
         name?: string
 
-        @mapping({ relatedEntityDescriptor: 'Category[]' })
+        @Mapping({ relatedEntityDescriptor: 'Category[]' })
         categories?: Category[]
       }
 
       class Category extends Entity {
-        @mapping()
+        @Mapping()
         name?: string
       }
 
@@ -122,22 +122,22 @@ describe('反序列化', () => {
 
     it('反序列化复合结构数组的特定位置到实例 [n]', () => {
       class LogSource extends Entity {
-        @mapping()
+        @Mapping()
         name?: string
       }
 
       class Category extends Entity {
-        @mapping()
+        @Mapping()
         name?: string
       }
 
       class Rule extends Entity {
         // logSource 使用 filters 的第 0 位置
-        @mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0]' })
+        @Mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0]' })
         logSource?: LogSource
 
         // category 使用 filters 的第 1 位置
-        @mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1]' })
+        @Mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1]' })
         category?: Category
       }
 
@@ -154,20 +154,20 @@ describe('反序列化', () => {
 
     it('反序列化复合结构数组的特定位置到实例 [n][m]', () => {
       class LogSource extends Entity {
-        @mapping()
+        @Mapping()
         name?: string
       }
 
       class Category extends Entity {
-        @mapping()
+        @Mapping()
         name?: string
       }
 
       class Rule extends Entity {
-        @mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
+        @Mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
         logSource?: LogSource
 
-        @mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1][2]' })
+        @Mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1][2]' })
         category?: Category
       }
 
@@ -184,13 +184,13 @@ describe('反序列化', () => {
 
     it('反序列化递归数据结构', () => {
       class Pattern extends Entity {
-        @mapping()
+        @Mapping()
         id?: number
 
-        @mapping()
+        @Mapping()
         name?: string
 
-        @mapping({ relatedEntityDescriptor: 'Pattern' })
+        @Mapping({ relatedEntityDescriptor: 'Pattern' })
         pattern?: Pattern
       }
 
@@ -215,13 +215,13 @@ describe('反序列化', () => {
 
     it('反序列化混合切片数据到实例 [n:m]', () => {
       class Foo extends Entity {
-        @mapping({ path: 'filters[0]' })
+        @Mapping({ path: 'filters[0]' })
         id?: number
 
-        @mapping({ path: 'filters[1]' })
+        @Mapping({ path: 'filters[1]' })
         name?: string
 
-        @mapping({ path: 'filters[2:3]' })
+        @Mapping({ path: 'filters[2:3]' })
         children?: string[]
       }
 
@@ -245,7 +245,7 @@ describe('反序列化', () => {
 
     it('反序列化切片数据到实例 [:]', () => {
       class Foo extends Entity {
-        @mapping({ path: 'filters[:]' })
+        @Mapping({ path: 'filters[:]' })
         filters?: number[]
       }
 
@@ -264,7 +264,7 @@ describe('反序列化', () => {
 
     it('反序列化切片数据到实例 []', () => {
       class Foo extends Entity {
-        @mapping({ path: 'filters[]' })
+        @Mapping({ path: 'filters[]' })
         filters?: number[]
       }
 
@@ -283,7 +283,7 @@ describe('反序列化', () => {
 
     it('反序列化切片数据到实例 [n:]', () => {
       class Foo extends Entity {
-        @mapping({ path: 'filters[2:]' })
+        @Mapping({ path: 'filters[2:]' })
         filters?: number[]
       }
 
@@ -302,7 +302,7 @@ describe('反序列化', () => {
 
     it('反序列化切片数据到实例 [:m]', () => {
       class Foo extends Entity {
-        @mapping({ path: 'filters[:4]' })
+        @Mapping({ path: 'filters[:4]' })
         filters?: number[]
       }
 
@@ -321,20 +321,20 @@ describe('反序列化', () => {
 
     it('反序列化间接继承 Entity 的类型实例', () => {
       class Foo extends Entity {
-        @mapping()
+        @Mapping()
         id?: number
 
-        @mapping()
+        @Mapping()
         name?: string
       }
 
       class Bar extends Foo {
-        @mapping()
+        @Mapping()
         tags?: string[]
       }
 
       class Taz extends Bar {
-        @mapping()
+        @Mapping()
         attr?: string
       }
 
