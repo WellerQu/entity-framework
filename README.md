@@ -216,7 +216,7 @@ expect(data.filters[3]).toBeUndefined()
 
 ## Core Annotation
 
-- @Mapping(options?: MappingOptions)
+- `@Mapping(options?: MappingOptions)`
 
 用来描述模型字段与映射数据关系的注解
 
@@ -238,7 +238,21 @@ type MappingOptions = {
 
 TODO:
 
-- [ ] notBeNull()
-- [ ] notBeUndefined()
-- [ ] notBeEmpty()
-- [ ] constants()
+- [x] NotBeNull()
+- [x] NotBeUndefined()
+- [x] NotBeEmpty()
+- [ ] Constants()
+
+### Asserting Annotation
+
+- `@NotBeNull(msg?: string)`
+
+  在 `Serialize` 时断言实例字段不会为 `null`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出.
+
+- `@NotBeUndefined(msg?: string)`
+
+  在 `Serialize` 时断言实例字段不会为 `undefined`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出.
+
+- `@NotBeEmpty(msg?: string)`
+
+  在 `Serialize` 时断言实例字段不会为 `null` 或 `undefined`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出. 等价于同时使用 `@NotBeNull() @NotBeUndefined()`

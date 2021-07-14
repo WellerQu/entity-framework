@@ -3,7 +3,6 @@ import { Accessor } from '../../accessor/Accessor'
 
 import { MetadataContext } from '../../metadata/MetadataContext'
 import { Prepare } from '../Prepare'
-import { isEntity } from '../../models/isEntity'
 
 type MappingOptions = {
   /**
@@ -20,10 +19,6 @@ type MappingOptions = {
 type MappingDecorator = (options?: Partial<MappingOptions>) => PropertyDecorator
 
 export const Mapping: MappingDecorator = options => (target, property) => {
-  if (!isEntity(target)) {
-    throw new Error('Mapping注解不能用于非 Entity 派生类型')
-  }
-
   const mergedOptions: MappingOptions = { ...options, path: options?.path ?? property.toString() }
   const prepare = new Prepare(MetadataContext.instance, target, property)
   const field = prepare.getField()

@@ -1,6 +1,6 @@
 /// <reference types="../typings/model" />
 
-import { Entity, Mapping } from '../src'
+import { Entity, Mapping, NotBeEmpty, NotBeNull, NotBeUndefined } from '../src'
 import { MetadataContext } from '../src/metadata/MetadataContext'
 
 describe('序列化', () => {
@@ -367,4 +367,93 @@ describe('序列化', () => {
     })
   })
 
+  describe('@NotBeNull()', () => {
+    it('默认错误信息', () => {
+      class Employee extends Entity {
+        @NotBeNull()
+        @Mapping()
+        id?: number | null = null
+      }
+
+      const employee = new Employee()
+
+      expect(() => {
+        employee.serialize()
+      }).toThrowError('id 在 Serialize 时不能为 null')
+    })
+
+    it('自定义错误信息', () => {
+      class Employee extends Entity {
+        @NotBeNull('忘了写id, 忘了写id, 忘了写id, 重要的事情说三遍!')
+        @Mapping()
+        id?: number | null = null
+      }
+
+      const employee = new Employee()
+
+      expect(() => {
+        employee.serialize()
+      }).toThrowError('忘了写id, 忘了写id, 忘了写id, 重要的事情说三遍!')
+    })
+  })
+
+  describe('@NotBeUndefined()', () => {
+    it('默认错误信息', () => {
+      class Employee extends Entity {
+        @NotBeUndefined()
+        @Mapping()
+        id?: number
+      }
+
+      const employee = new Employee()
+
+      expect(() => {
+        employee.serialize()
+      }).toThrowError('id 在 Serialize 时不能为 undefined')
+    })
+
+    it('自定义错误信息', () => {
+      class Employee extends Entity {
+        @NotBeUndefined('忘了写id, 忘了写id, 忘了写id, 重要的事情说三遍!')
+        @Mapping()
+        id?: number
+      }
+
+      const employee = new Employee()
+
+      expect(() => {
+        employee.serialize()
+      }).toThrowError('忘了写id, 忘了写id, 忘了写id, 重要的事情说三遍!')
+    })
+  })
+
+  describe('@NotBeEmpty()', () => {
+    it('默认错误信息', () => {
+      class Employee extends Entity {
+        @NotBeEmpty()
+        @Mapping()
+        id?: number | null = null
+      }
+
+      const employee = new Employee()
+
+      expect(() => {
+        employee.serialize()
+      }).toThrowError('id 在 Serialize 时不能为 null 或 undefined')
+    })
+
+    it('自定义错误信息', () => {
+      class Employee extends Entity {
+        @NotBeEmpty('id 不能为 empty')
+        @Mapping()
+        id?: number | null = null
+      }
+
+      const employee = new Employee()
+
+      expect(() => {
+        employee.serialize()
+      }).toThrowError('id 不能为 empty')
+    })
+  })
 })
