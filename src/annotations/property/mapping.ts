@@ -3,10 +3,11 @@ import { Accessor } from '../../accessor/Accessor'
 
 import { MetadataContext } from '../../metadata/MetadataContext'
 import { Prepare } from '../Prepare'
+import { isEntity } from '../../models/isEntity'
 
 type MappingOptions = {
   /**
-   * 映射路径(JSONPath)
+   * 数据映射路径
    */
   path: string
   /**
@@ -16,10 +17,14 @@ type MappingOptions = {
   relatedEntityDescriptor?: string
 }
 
-type MappingDecorator = (options?: Partial<MappingOptions>) => (target: model.Entity, property: string) => void
+type MappingDecorator = (options?: Partial<MappingOptions>) => PropertyDecorator
 
 export const Mapping: MappingDecorator = options => (target, property) => {
-  const mergedOptions: MappingOptions = { ...options, path: options?.path ?? property, }
+  if (!isEntity(target)) {
+    throw new Error('Mapping注解不能用于非 Entity 派生类型')
+  }
+
+  const mergedOptions: MappingOptions = { ...options, path: options?.path ?? property.toString() }
   const prepare = new Prepare(MetadataContext.instance, target, property)
   const field = prepare.getField()
 
@@ -44,7 +49,7 @@ class MappingSerializeCommand extends OperationCommand {
       const relatedEntity = MetadataContext.instance.getEntity(relatedEntityName)
 
       if (!relatedEntity) {
-        throw new Error(`${this.field.name} 的描述 ${descriptor} 的关联实体类型不存在`)
+        throw new Error(`${this.field.name.toString()} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
       const instances = Reflect.get(entity, this.field.name) as model.Entity[] | undefined
@@ -53,7 +58,7 @@ class MappingSerializeCommand extends OperationCommand {
       }
       
       if (!Array.isArray(instances)) {
-        throw new Error(`${this.field.name} 的实例数据不是数组`)
+        throw new Error(`${this.field.name.toString()} 的实例数据不是数组`)
       }
 
       const origin = instances.map(item => item.serialize())
@@ -63,7 +68,7 @@ class MappingSerializeCommand extends OperationCommand {
       const relatedEntity = MetadataContext.instance.getEntity(descriptor)
 
       if (!relatedEntity) {
-        throw new Error(`${this.field.name} 的描述 ${descriptor} 的关联实体类型不存在`)
+        throw new Error(`${this.field.name.toString()} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
       const instance = Reflect.get(entity, this.field.name) as model.Entity | undefined
@@ -92,7 +97,7 @@ class MappingDeserializeCommand extends OperationCommand {
       const relatedEntity = MetadataContext.instance.getEntity(relatedEntityName)
 
       if (!relatedEntity) {
-        throw new Error(`${this.field.name} 的描述 ${descriptor} 的关联实体类型不存在`)
+        throw new Error(`${this.field.name.toString()} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
       const origin = accessor.getValue<model.Data[]>()
@@ -101,7 +106,7 @@ class MappingDeserializeCommand extends OperationCommand {
       }
 
       if (!Array.isArray(origin)) {
-        throw new Error(`${this.field.name} 的映射数据不是数组`)
+        throw new Error(`${this.field.name.toString()} 的映射数据不是数组`)
       }
 
       const array = origin.map(item => {

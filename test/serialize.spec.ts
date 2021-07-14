@@ -352,5 +352,19 @@ describe('序列化', () => {
       expect(data.tags[1]).toBe('World')
       expect(data.attr).toBe('attr')
     })
+
+    it('序列化支持symbol数据类型', () => {
+      class Employee extends Entity {
+        @Mapping({path: 'idList'})
+        [Symbol.iterator]?: string[]
+      }
+
+      const employee = new Employee()
+      employee[Symbol.iterator] = ['Hello']
+
+      const data: model.Data = employee.serialize()
+      expect(data.idList[0]).toBe('Hello')
+    })
   })
+
 })

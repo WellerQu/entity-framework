@@ -4,7 +4,7 @@ import { MetadataContext } from './MetadataContext'
 export class EntityMetadata implements metadata.Entity {
   readonly name: string
 
-  private fieldsMap: Record<metadata.Field['name'], metadata.Field | undefined> = {}
+  private fieldsMap = new Map<metadata.Field['name'], metadata.Field>()
 
   private getBaseFields(): metadata.Field[] {
     const fields: metadata.Field[] = []
@@ -39,16 +39,15 @@ export class EntityMetadata implements metadata.Entity {
     return instance
   }
 
-  getField(name: string): metadata.Field | undefined {
-    return this.fieldsMap[name] ?? this.getBaseFields().find(item => item.name === name)
+  getField(name: metadata.Field['name']): metadata.Field | undefined {
+    return this.fieldsMap.get(name) ?? this.getBaseFields().find(item => item.name === name)
   }
 
   getFields(): metadata.Field[] {
     const fields: metadata.Field[] = this.getBaseFields()
-    const records = Object.values(this.fieldsMap)
+    const records = this.fieldsMap.values()
 
-    for (let i = 0; i < records.length; i++) {
-      const field = records[i]
+    for (const field of records) {
       if (!field) {
         continue
       }
@@ -60,6 +59,6 @@ export class EntityMetadata implements metadata.Entity {
   }
 
   setField(field: metadata.Field): void {
-    this.fieldsMap[field.name] = field
+    this.fieldsMap.set(field.name, field)
   }
 }

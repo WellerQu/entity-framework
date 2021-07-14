@@ -349,5 +349,19 @@ describe('反序列化', () => {
       expect(taz.tags?.[0]).toBe('Hello')
       expect(taz.tags?.[1]).toBe('World')
     })
+
+    it('反序列化支持symbol数据类型', () => {
+      class Employee extends Entity {
+        @Mapping({ path: 'idList' })
+        [Symbol.iterator]?: string[]
+      }
+
+      const data: model.Data = { idList: ['Hello'] }
+
+      const employee = new Employee()
+      employee.deserialize(data)
+
+      expect(employee[Symbol.iterator]?.[0]).toBe('Hello')
+    })
   })
 })
