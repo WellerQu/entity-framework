@@ -236,13 +236,6 @@ type MappingOptions = {
 
 ## Extension Annotation
 
-TODO:
-
-- [x] NotBeNull()
-- [x] NotBeUndefined()
-- [x] NotBeEmpty()
-- [ ] Constants()
-
 ### Asserting Annotation
 
 - `@NotBeNull(msg?: string)`
