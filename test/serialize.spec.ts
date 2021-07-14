@@ -8,7 +8,7 @@ describe('序列化', () => {
     MetadataContext.instance.clear()
   })
 
-  describe('@mapping()', () => {
+  describe('@Mapping()', () => {
     it('序列化实例成同构数据', () => {
       class ResponseData<T> extends Entity {
         @Mapping()

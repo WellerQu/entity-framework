@@ -10,13 +10,13 @@
 
 ```typescript
 class ResponseData<T> extends Entity {
-  @mapping()
+  @Mapping()
   public data?: T
 
-  @mapping()
+  @Mapping()
   public msg?: string
 
-  @mapping()
+  @Mapping()
   public code?: number
 
   public others?: unknown
@@ -117,22 +117,22 @@ expect(res.others).toBeUndefined()
 
   | 数据访问路径 | 映射数据 | 说明 |
   | -- | -- | -- |
-  | @mapping({ path: 'id' }) | 1 | 如果类型成员字段与path一致, 可缺省 |
-  | @mapping({ path: 'filters[0]' }) | { "name": "5天精通数据格式转换" } | 通过索引范文映射数据数组的特定位置 |
-  | @mapping({ path: 'filters[1:]' }) | ["JavaScript...", "编译...", ...]  | filters数组的后6项数据 |
-  | @mapping({ path: 'stores' }) | [{"id": 2, "name": "..."}, ...]  | stores数组的全部数据 |
+  | @Mapping({ path: 'id' }) | 1 | 如果类型成员字段与path一致, 可缺省 |
+  | @Mapping({ path: 'filters[0]' }) | { "name": "5天精通数据格式转换" } | 通过索引范文映射数据数组的特定位置 |
+  | @Mapping({ path: 'filters[1:]' }) | ["JavaScript...", "编译...", ...]  | filters数组的后6项数据 |
+  | @Mapping({ path: 'stores' }) | [{"id": 2, "name": "..."}, ...]  | stores数组的全部数据 |
 
 ## Recursive Data Structure
 
 ```typescript
 class Pattern extends Entity {
-  @mapping()
+  @Mapping()
   id?: number
 
-  @mapping()
+  @Mapping()
   name?: string
 
-  @mapping({ relatedEntityDescriptor: 'Pattern' })
+  @Mapping({ relatedEntityDescriptor: 'Pattern' })
   pattern?: Pattern
 }
 
@@ -155,20 +155,20 @@ expect(data.pattern.name).toBe('P2')
 
 ```typescript
 class LogSource extends Entity {
-  @mapping()
+  @Mapping()
   name?: string
 }
 
 class Category extends Entity {
-  @mapping()
+  @Mapping()
   name?: string
 }
 
 class Rule extends Entity {
-  @mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
+  @Mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
   logSource?: LogSource
 
-  @mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1][2]' })
+  @Mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1][2]' })
   category?: Category
 }
 
@@ -190,13 +190,13 @@ expect(data.filters?.[1][2].name).toBe('category')
 
 ```typescript
 class Foo extends Entity {
-  @mapping({ path: 'filters[0]' })
+  @Mapping({ path: 'filters[0]' })
   id?: number
 
-  @mapping({ path: 'filters[1]' })
+  @Mapping({ path: 'filters[1]' })
   name?: string
 
-  @mapping({ path: 'filters[2:3]' })
+  @Mapping({ path: 'filters[2:3]' })
   children?: string[]
 }
 
@@ -216,7 +216,7 @@ expect(data.filters[3]).toBeUndefined()
 
 ## Core Annotation
 
-- @mapping(options?: MappingOptions)
+- @Mapping(options?: MappingOptions)
 
 用来描述模型字段与映射数据关系的注解
 

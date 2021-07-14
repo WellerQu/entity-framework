@@ -8,7 +8,7 @@ describe('反序列化', () => {
     MetadataContext.instance.clear()
   })
 
-  describe('@mapping()', () => {
+  describe('@Mapping()', () => {
     it('反序列化同构数据到实例', () => {
       class ResponseData<T> extends Entity {
         @Mapping()
