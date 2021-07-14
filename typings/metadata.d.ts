@@ -10,7 +10,7 @@ namespace metadata {
   }
 
   export interface Field {
-    readonly name: string
+    readonly name: string | symbol
 
     getSerializeCommands(): Command[]
     getDeserializeCommands(): Command[]

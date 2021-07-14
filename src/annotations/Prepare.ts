@@ -6,7 +6,7 @@ export class Prepare {
   private field: metadata.Field
   private entity: metadata.Entity
 
-  constructor(private context: MetadataContext, target: model.Entity, property: string) {
+  constructor(private context: MetadataContext, target: model.Entity, property: string | symbol) {
     const entityName = target.constructor.name
     const fieldName = property
 

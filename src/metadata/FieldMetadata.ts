@@ -1,11 +1,8 @@
 export class FieldMetadata implements metadata.Field {
-  readonly name: string;
-
   private serializeCommands: metadata.Command[];
   private deserializeCommands: metadata.Command[];
 
-  constructor(name: string) {
-    this.name = name
+  constructor(public readonly name: metadata.Field['name']) {
     this.serializeCommands = []
     this.deserializeCommands = []
   }
