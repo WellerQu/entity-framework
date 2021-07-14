@@ -23,15 +23,15 @@ export const Mapping: MappingDecorator = options => (target, property) => {
   const prepare = new Prepare(MetadataContext.instance, target, property)
   const field = prepare.getField()
 
-  const serializeCommand = new MappingSerializeCommand(mergedOptions, field)
-  const deserializeCommand = new MappingDeserializeCommand(mergedOptions, field)
+  const serializeCommand = new MappingSerializeCommand(mergedOptions, field.name)
+  const deserializeCommand = new MappingDeserializeCommand(mergedOptions, field.name)
 
   field.appendSerializeCommand(serializeCommand)
   field.appendDeserializeCommand(deserializeCommand)
 }
 
 class MappingSerializeCommand extends OperationCommand {
-  constructor(private options: MappingOptions, private field: metadata.Field) {
+  constructor(private options: MappingOptions, private fieldName: metadata.Field['name']) {
     super(0)
   }
 
@@ -44,16 +44,16 @@ class MappingSerializeCommand extends OperationCommand {
       const relatedEntity = MetadataContext.instance.getEntity(relatedEntityName)
 
       if (!relatedEntity) {
-        throw new Error(`${this.field.name.toString()} 的描述 ${descriptor} 的关联实体类型不存在`)
+        throw new Error(`${this.fieldName.toString()} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
-      const instances = Reflect.get(entity, this.field.name) as model.Entity[] | undefined
+      const instances = Reflect.get(entity, this.fieldName) as model.Entity[] | undefined
       if (!instances) {
         return
       }
       
       if (!Array.isArray(instances)) {
-        throw new Error(`${this.field.name.toString()} 的实例数据不是数组`)
+        throw new Error(`${this.fieldName.toString()} 的实例数据不是数组`)
       }
 
       const origin = instances.map(item => item.serialize())
@@ -63,23 +63,23 @@ class MappingSerializeCommand extends OperationCommand {
       const relatedEntity = MetadataContext.instance.getEntity(descriptor)
 
       if (!relatedEntity) {
-        throw new Error(`${this.field.name.toString()} 的描述 ${descriptor} 的关联实体类型不存在`)
+        throw new Error(`${this.fieldName.toString()} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
-      const instance = Reflect.get(entity, this.field.name) as model.Entity | undefined
+      const instance = Reflect.get(entity, this.fieldName) as model.Entity | undefined
       if (!instance) {
         return
       }
 
       accessor.setValue(instance.serialize())
     } else {
-      accessor.setValue(Reflect.get(entity, this.field.name))
+      accessor.setValue(Reflect.get(entity, this.fieldName))
     }
   }
 }
 
 class MappingDeserializeCommand extends OperationCommand {
-  constructor(private options: MappingOptions, private field: metadata.Field) {
+  constructor(private options: MappingOptions, private fieldName: metadata.Field['name']) {
     super(0)
   }
 
@@ -92,7 +92,7 @@ class MappingDeserializeCommand extends OperationCommand {
       const relatedEntity = MetadataContext.instance.getEntity(relatedEntityName)
 
       if (!relatedEntity) {
-        throw new Error(`${this.field.name.toString()} 的描述 ${descriptor} 的关联实体类型不存在`)
+        throw new Error(`${this.fieldName.toString()} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
       const origin = accessor.getValue<model.Data[]>()
@@ -101,14 +101,14 @@ class MappingDeserializeCommand extends OperationCommand {
       }
 
       if (!Array.isArray(origin)) {
-        throw new Error(`${this.field.name.toString()} 的映射数据不是数组`)
+        throw new Error(`${this.fieldName.toString()} 的映射数据不是数组`)
       }
 
       const array = origin.map(item => {
         return relatedEntity.createInstance(item)
       })
 
-      Reflect.set(entity, this.field.name, array)
+      Reflect.set(entity, this.fieldName, array)
     } else if (descriptor) {
       const relatedEntity = MetadataContext.instance.getEntity(descriptor)
 
@@ -124,9 +124,9 @@ class MappingDeserializeCommand extends OperationCommand {
       const instance = relatedEntity.createInstance()
       instance.deserialize(accessor.getValue())
 
-      Reflect.set(entity, this.field.name, instance)
+      Reflect.set(entity, this.fieldName, instance)
     } else {
-      Reflect.set(entity, this.field.name, accessor.getValue())
+      Reflect.set(entity, this.fieldName, accessor.getValue())
     }
   }
 }

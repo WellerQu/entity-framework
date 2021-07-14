@@ -3,53 +3,55 @@ import { OperationCommand } from '../../metadata/OperationCommand'
 import { Prepare } from '../Prepare'
 
 type AssertDecorator = (msg?: string) => PropertyDecorator
+type AssertValidator = (value: unknown, message: string) => void
 
-export const NotBeNull: AssertDecorator = (msg) => (target, property) => {
-  const prepare = new Prepare(MetadataContext.instance, target, property)
-  const field = prepare.getField()
-
-  const serializeCommand = new AssertCommand((_, entity) => {
-    if (Reflect.get(entity, field.name) === null) {
-      throw new Error(msg ?? `${field.name.toString()} 在 Serialize 时不能为 null`)
-    }
-  })
-
-  field.appendSerializeCommand(serializeCommand)
+const notBeNullValidator: AssertValidator = (value, message) => {
+  if (value === null) {
+    throw new Error(message)
+  }
 }
 
-export const NotBeUndefined: AssertDecorator = (msg) => (target, property) => {
-  const prepare = new Prepare(MetadataContext.instance, target, property)
-  const field = prepare.getField()
-
-  const serializeCommand = new AssertCommand((_, entity) => {
-    if (Reflect.get(entity, field.name) === undefined) {
-      throw new Error(msg ?? `${field.name.toString()} 在 Serialize 时不能为 undefined`)
-    }
-  })
-
-  field.appendSerializeCommand(serializeCommand)
+const notBeUndefinedValidator: AssertValidator = (value, message) => {
+  if (value === undefined) {
+    throw new Error(message)
+  }
 }
 
-export const NotBeEmpty: AssertDecorator = (msg) => (target, property) => {
-  const prepare = new Prepare(MetadataContext.instance, target, property)
-  const field = prepare.getField()
+const notBeEmptyValidator: AssertValidator = (value, message) => {
+  if (value === undefined || value === null) {
+    throw new Error(message)
+  }
+}
 
-  const serializeCommand = new AssertCommand((_, entity) => {
-    const value = Reflect.get(entity, field.name)
-    if (value === undefined || value === null) {
-      throw new Error(msg ?? `${field.name.toString()} 在 Serialize 时不能为 null 或 undefined`)
-    }
-  })
+const assertFactory = (validator: AssertValidator, massager: (fieldName: string) => string): AssertDecorator => {
+  return (msg) => (target, property) => {
+    const prepare = new Prepare(MetadataContext.instance, target, property)
+    const field = prepare.getField()
+    const defaultMessage = massager(field.name.toString())
 
-  field.appendSerializeCommand(serializeCommand)
+    const serializeCommand = new AssertCommand(field.name, `在 Serialize 时: ${msg ?? defaultMessage}`, validator)
+    const deserializeCommand = new AssertCommand(field.name, `在 Deserialize 时: ${msg ?? defaultMessage}`, validator)
+
+    field.appendSerializeCommand(serializeCommand)
+    field.appendDeserializeCommand(deserializeCommand)
+  }
 }
 
 class AssertCommand extends OperationCommand {
-  constructor(private validator: (data: model.Data, entity: model.Entity) => void) {
+  constructor(
+    private fieldName: metadata.Field['name'],
+    private message: string,
+    private validator: AssertValidator,
+  ) {
     super(24)
   }
 
-  exec(data: model.Data, entity: model.Entity): void {
-    this.validator(data, entity)
+  exec(_: model.Data, entity: model.Entity): void {
+    const value = Reflect.get(entity, this.fieldName)
+    this.validator(value, this.message)
   }
 }
+
+export const NotBeNull: AssertDecorator = assertFactory(notBeNullValidator, name => `${name} 不能为 null`)
+export const NotBeUndefined: AssertDecorator = assertFactory(notBeUndefinedValidator, name => `${name} 不能为 undefined`)
+export const NotBeEmpty: AssertDecorator = assertFactory(notBeEmptyValidator, name => `${name} 不能为 null 或 undefined`)

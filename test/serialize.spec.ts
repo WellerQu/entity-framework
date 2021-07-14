@@ -379,7 +379,7 @@ describe('序列化', () => {
 
       expect(() => {
         employee.serialize()
-      }).toThrowError('id 在 Serialize 时不能为 null')
+      }).toThrowError('在 Serialize 时: id 不能为 null')
     })
 
     it('自定义错误信息', () => {
@@ -409,7 +409,7 @@ describe('序列化', () => {
 
       expect(() => {
         employee.serialize()
-      }).toThrowError('id 在 Serialize 时不能为 undefined')
+      }).toThrowError('在 Serialize 时: id 不能为 undefined')
     })
 
     it('自定义错误信息', () => {
@@ -439,7 +439,7 @@ describe('序列化', () => {
 
       expect(() => {
         employee.serialize()
-      }).toThrowError('id 在 Serialize 时不能为 null 或 undefined')
+      }).toThrowError('在 Serialize 时: id 不能为 null 或 undefined')
     })
 
     it('自定义错误信息', () => {

@@ -240,12 +240,12 @@ type MappingOptions = {
 
 - `@NotBeNull(msg?: string)`
 
-  在 `Serialize` 时断言实例字段不会为 `null`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出.
+  在 `Serialize` 或 `Deserialize` 时断言实例字段不会为 `null`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出.
 
 - `@NotBeUndefined(msg?: string)`
 
-  在 `Serialize` 时断言实例字段不会为 `undefined`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出.
+  在 `Serialize` 或 `Deserialize` 时断言实例字段不会为 `undefined`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出.
 
 - `@NotBeEmpty(msg?: string)`
 
-  在 `Serialize` 时断言实例字段不会为 `null` 或 `undefined`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出. 等价于同时使用 `@NotBeNull() @NotBeUndefined()`
+  在 `Serialize` 或 `Deserialize` 时断言实例字段不会为 `null` 或 `undefined`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出. 等价于同时使用 `@NotBeNull() @NotBeUndefined()`
