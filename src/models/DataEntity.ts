@@ -2,7 +2,7 @@ import { COMMAND_DESERIALIZE_KEY, COMMAND_SERIALIZE_KEY } from '../annotations/c
 import { BatchExecutor } from '../commands/BatchExecutor'
 import { MetadataContext } from '../metadata/MetadataContext'
 
-export abstract class Entity implements model.Entity {
+export abstract class DataEntity implements model.Entity {
   protected doSerialize?: () => model.Data
   protected doDeSerialize?: (data: model.Data) => void
 
