@@ -249,3 +249,53 @@ type MappingOptions = {
 - `@NotBeEmpty(msg?: string)`
 
   在 `Serialize` 或 `Deserialize` 时断言实例字段不会为 `null` 或 `undefined`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出. 等价于同时使用 `@NotBeNull() @NotBeUndefined()`
+
+## 自定义序列化与反序列化
+
+  使用 `@Mapping()` 注解的自动序列化与反序列化无法覆盖某些特殊场景, 此时需要在`Entity`派生类构造函数中编写自定义序列化函数(`doSerialize`)与反序列化函数(`doDeSerialize`).
+
+### 自定义序列化
+
+  ```typescript
+  class Company extends Entity {
+    constructor() {
+      super()
+
+      this.doSerialize = () => {
+        return { id: (this.id ?? 0) + 244 }
+      }
+    }
+
+    id?: number | null
+  }
+
+  const company = new Company()
+  company.id = 11
+
+  const data: model.Data = company.serialize()
+
+  expect(data.id).toBe(255)
+  ```
+
+### 自定义反序列化
+
+  ```typescript
+  class Company extends Entity {
+    constructor() {
+      super()
+
+      this.doDeSerialize = (data: model.Data) => {
+        this.id = data.aid
+      }
+    }
+
+    id?: number | null
+  }
+
+  const data: model.Data = { aid: 255 }
+
+  const company = new Company()
+  company.deserialize(data)
+
+  expect(company.id).toBe(255)
+  ```
