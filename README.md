@@ -4,7 +4,7 @@
 
 [see more about experimentalDecorators](https://www.typescriptlang.org/tsconfig#experimentalDecorators)
 
-## Basic Example
+## 基本用法
 
 一个类声明在继承 `Entity` 后可视为一个模型声明, 该类声明的实例可以进行**序列化**与**反序列化**操作.
 
@@ -57,7 +57,7 @@ expect(res.others).toBeUndefined()
 - `test/serialize.spec.ts`
 - `test/deserialize.spec.ts`
 
-## Concepts
+## 概念介绍
 
 - 映射数据 Data
 
@@ -122,121 +122,127 @@ expect(res.others).toBeUndefined()
   | @Mapping({ path: 'filters[1:]' }) | ["JavaScript...", "编译...", ...]  | filters数组的后6项数据 |
   | @Mapping({ path: 'stores' }) | [{"id": 2, "name": "..."}, ...]  | stores数组的全部数据 |
 
-## Recursive Data Structure
+## 更多用法
 
-```typescript
-class Pattern extends Entity {
-  @Mapping()
-  id?: number
+- 递归数据类型映射
 
-  @Mapping()
-  name?: string
+  ```typescript
+  class Pattern extends Entity {
+    @Mapping()
+    id?: number
 
-  @Mapping({ relatedEntityDescriptor: 'Pattern' })
-  pattern?: Pattern
-}
+    @Mapping()
+    name?: string
 
-const pattern = new Pattern()
-pattern.id = 1
-pattern.name = 'P1'
-pattern.pattern = new Pattern()
-pattern.pattern.id = 2
-pattern.pattern.name = 'P2'
+    @Mapping({ relatedEntityDescriptor: 'Pattern' })
+    pattern?: Pattern
+  }
 
-const data: model.Data = pattern.serialize()
+  const pattern = new Pattern()
+  pattern.id = 1
+  pattern.name = 'P1'
+  pattern.pattern = new Pattern()
+  pattern.pattern.id = 2
+  pattern.pattern.name = 'P2'
 
-expect(data.id).toBe(1)
-expect(data.name).toBe('P1')
-expect(data.pattern.id).toBe(2)
-expect(data.pattern.name).toBe('P2')
-```
+  const data: model.Data = pattern.serialize()
 
-## Nested Array
+  expect(data.id).toBe(1)
+  expect(data.name).toBe('P1')
+  expect(data.pattern.id).toBe(2)
+  expect(data.pattern.name).toBe('P2')
+  ```
 
-```typescript
-class LogSource extends Entity {
-  @Mapping()
-  name?: string
-}
+- 映射到多维数组
 
-class Category extends Entity {
-  @Mapping()
-  name?: string
-}
+  ```typescript
+  class LogSource extends Entity {
+    @Mapping()
+    name?: string
+  }
 
-class Rule extends Entity {
-  @Mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
-  logSource?: LogSource
+  class Category extends Entity {
+    @Mapping()
+    name?: string
+  }
 
-  @Mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1][2]' })
-  category?: Category
-}
+  class Rule extends Entity {
+    @Mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
+    logSource?: LogSource
 
-const rule = new Rule()
+    @Mapping({ relatedEntityDescriptor: 'Category', path: 'filters[1][2]' })
+    category?: Category
+  }
 
-rule.logSource = new LogSource()
-rule.logSource.name = 'logSource'
+  const rule = new Rule()
 
-rule.category = new Category()
-rule.category.name = 'category'
+  rule.logSource = new LogSource()
+  rule.logSource.name = 'logSource'
 
-const data: model.Data = rule.serialize()
+  rule.category = new Category()
+  rule.category.name = 'category'
 
-expect(data.filters?.[0][1].name).toBe('logSource')
-expect(data.filters?.[1][2].name).toBe('category')
-```
+  const data: model.Data = rule.serialize()
 
-## Slice Array
+  expect(data.filters?.[0][1].name).toBe('logSource')
+  expect(data.filters?.[1][2].name).toBe('category')
+  ```
 
-```typescript
-class Foo extends Entity {
-  @Mapping({ path: 'filters[0]' })
-  id?: number
+- 映射到数组切片
 
-  @Mapping({ path: 'filters[1]' })
-  name?: string
+  ```typescript
+  class Foo extends Entity {
+    @Mapping({ path: 'filters[0]' })
+    id?: number
 
-  @Mapping({ path: 'filters[2:3]' })
-  children?: string[]
-}
+    @Mapping({ path: 'filters[1]' })
+    name?: string
 
-const foo = new Foo()
-foo.id = 1
-foo.name = 'foo'
-foo.children = ['Hello', 'World']
+    @Mapping({ path: 'filters[2:3]' })
+    children?: string[]
+  }
 
-const data: model.Data = foo.serialize()
+  const foo = new Foo()
+  foo.id = 1
+  foo.name = 'foo'
+  foo.children = ['Hello', 'World']
 
-expect(data.filters).toHaveLength(3)
-expect(data.filters[0]).toBe(1)
-expect(data.filters[1]).toBe('foo')
-expect(data.filters[2]).toBe('Hello')
-expect(data.filters[3]).toBeUndefined()
-```
+  const data: model.Data = foo.serialize()
 
-## Core Annotation
+  expect(data.filters).toHaveLength(3)
+  expect(data.filters[0]).toBe(1)
+  expect(data.filters[1]).toBe('foo')
+  expect(data.filters[2]).toBe('Hello')
+  expect(data.filters[3]).toBeUndefined()
+  ```
+
+## 注解
+
+### 数据映射关系注解
+
+  用于自动序列化过程与反序列化过程中关联模型字段与映射数据的键
 
 - `@Mapping(options?: MappingOptions)`
 
-用来描述模型字段与映射数据关系的注解
+  用来描述模型字段与映射数据关系的注解
 
-```typescript
-type MappingOptions = {
-  /**
-   * 映射路径(JSONPath)
-   */
-  path: string
-  /**
-   * 关联模型的名称 
-   * 例如: Metric 表示指标, 或者 Metric[] 表示指标数组, 如果缺省则认为是一个 Object 或 Object[]
-   */
-  relatedEntityDescriptor?: string
-}
-```
+  ```typescript
+  type MappingOptions = {
+    /**
+     * 映射路径(JSONPath)
+    */
+    path: string
+    /**
+     * 关联模型的名称 
+    * 例如: Metric 表示指标, 或者 Metric[] 表示指标数组, 如果缺省则认为是一个 Object 或 Object[]
+    */
+    relatedEntityDescriptor?: string
+  }
+  ```
 
-## Extension Annotation
+### 断言注解
 
-### Asserting Annotation
+  在序列化过程与反序列化过程后对模型中的数据进行断言
 
 - `@NotBeNull(msg?: string)`
 
@@ -252,9 +258,9 @@ type MappingOptions = {
 
 ## 自定义序列化与反序列化
 
-  使用 `@Mapping()` 注解的自动序列化与反序列化无法覆盖某些特殊场景, 此时需要在`Entity`派生类构造函数中编写自定义序列化函数(`doSerialize`)与反序列化函数(`doDeSerialize`).
+  使用 `@Mapping()` 注解的自动序列化与反序列化无法覆盖某些特殊场景, 此时需要在`Entity`派生类构造函数中编写自定义序列化函数(`doSerialize`)与反序列化函数(`doDeSerialize`). **一旦使用了自定义函数**, 则忽略所有注解.
 
-### 自定义序列化
+- 自定义序列化
 
   ```typescript
   class Company extends Entity {
@@ -277,7 +283,7 @@ type MappingOptions = {
   expect(data.id).toBe(255)
   ```
 
-### 自定义反序列化
+- 自定义反序列化
 
   ```typescript
   class Company extends Entity {
