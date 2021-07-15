@@ -1,25 +1,35 @@
 export class FieldMetadata implements metadata.Field {
-  private serializeCommands: command.Command[];
-  private deserializeCommands: command.Command[];
+  private metadata = new Map<string | symbol, unknown>()
 
-  constructor(public readonly name: metadata.Field['name']) {
-    this.serializeCommands = []
-    this.deserializeCommands = []
+  constructor(public readonly name: metadata.Field['name']) {}
+
+  clear(): void {
+    this.metadata.clear()
   }
 
-  getSerializeCommands(): command.Command[] {
-    return this.serializeCommands
+  setMetadata<T extends unknown>(key: string | symbol, data: T): this {
+    this.metadata.set(key, data)
+    return this
   }
 
-  getDeserializeCommands(): command.Command[] {
-    return this.deserializeCommands
+  getMetadata<T extends unknown>(key: string | symbol): T | undefined {
+    return this.metadata.get(key) as T
   }
 
-  appendSerializeCommand(command: command.Command): void {
-    this.serializeCommands.push(command)
-  }
+  appendMetadata<T extends unknown>(key: string | symbol, data: T): this {
+    const exist = this.getMetadata(key)
 
-  appendDeserializeCommand(command: command.Command): void {
-    this.deserializeCommands.push(command)
+    if (exist === undefined) {
+      this.setMetadata(key, [data])
+      return this
+    }
+
+    if (!Array.isArray(exist)) {
+      throw new Error(`不能在非数组的键(${key.toString()})上追加数据`)
+    }
+
+    this.setMetadata(key, [...exist, data])
+
+    return this
   }
 }
