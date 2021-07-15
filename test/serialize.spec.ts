@@ -365,6 +365,27 @@ describe('序列化', () => {
       const data: model.Data = employee.serialize()
       expect(data.idList[0]).toBe('Hello')
     })
+
+    it('自定义序列化过程', () => {
+      class Company extends Entity {
+        constructor() {
+          super()
+
+          this.doSerialize = () => {
+            return { id: (this.id ?? 0) + 244 }
+          }
+        }
+
+        id?: number | null
+      }
+
+      const company = new Company()
+      company.id = 11
+
+      const data: model.Data = company.serialize()
+
+      expect(data.id).toBe(255)
+    })
   })
 
   describe('@NotBeNull()', () => {

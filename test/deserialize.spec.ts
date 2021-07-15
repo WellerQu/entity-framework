@@ -363,6 +363,27 @@ describe('反序列化', () => {
 
       expect(employee[Symbol.iterator]?.[0]).toBe('Hello')
     })
+
+    it('自定义序列化过程', () => {
+      class Company extends Entity {
+        constructor() {
+          super()
+
+          this.doDeSerialize = (data: model.Data) => {
+            this.id = data.aid
+          }
+        }
+
+        id?: number | null
+      }
+
+      const data: model.Data = { aid: 255 }
+
+      const company = new Company()
+      company.deserialize(data)
+
+      expect(company.id).toBe(255)
+    })
   })
 
   describe('@NotBeNull()', () => {
