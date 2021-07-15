@@ -2,7 +2,14 @@ import { BatchExecutor } from '../metadata/BatchExecutor'
 import { MetadataContext } from '../metadata/MetadataContext'
 
 export abstract class Entity implements model.Entity {
+  protected doSerialize?: () => model.Data
+  protected doDeSerialize?: (data: model.Data) => void
+
   serialize(): model.Data {
+    if (this.doSerialize) {
+      return this.doSerialize()
+    }
+
     const entity = MetadataContext.instance.getEntity(this.constructor.name)
     if (!entity) {
       return {}
@@ -20,10 +27,14 @@ export abstract class Entity implements model.Entity {
     return data
   }
 
-  deserialize(data: model.Data): model.Entity {
+  deserialize(data: model.Data): void {
+    if (this.doDeSerialize) {
+      return this.doDeSerialize(data)
+    }
+
     const entity = MetadataContext.instance.getEntity(this.constructor.name)
     if (!entity) {
-      return this
+      return
     }
 
     const fields = entity.getFields()
@@ -33,7 +44,5 @@ export abstract class Entity implements model.Entity {
 
       executor.exec(data, this)
     }
-
-    return this
   }
 }
