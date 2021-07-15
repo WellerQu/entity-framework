@@ -2,7 +2,7 @@
 import { EntityMetadata } from '../metadata/EntityMetadata'
 import { FieldMetadata } from '../metadata/FieldMetadata'
 import { MetadataContext } from '../metadata/MetadataContext'
-import { isEntity } from '../models/isEntity'
+import { isEntity } from '../models/isDataEntity'
 
 export class Prepare {
   private field: metadata.Field
