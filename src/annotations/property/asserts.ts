@@ -1,6 +1,7 @@
 import { MetadataContext } from '../../metadata/MetadataContext'
-import { OperationCommand } from '../../metadata/OperationCommand'
+import { OperationCommand } from '../../commands/OperationCommand'
 import { Prepare } from '../Prepare'
+import { COMMAND_DESERIALIZE_KEY, COMMAND_SERIALIZE_KEY } from '../constants'
 
 type AssertDecorator = (msg?: string) => PropertyDecorator
 type AssertValidator = (value: unknown, message: string) => void
@@ -32,8 +33,8 @@ const assertFactory = (validator: AssertValidator, massager: (fieldName: string)
     const serializeCommand = new AssertCommand(field.name, `在 Serialize 时: ${msg ?? defaultMessage}`, validator)
     const deserializeCommand = new AssertCommand(field.name, `在 Deserialize 时: ${msg ?? defaultMessage}`, validator)
 
-    field.appendSerializeCommand(serializeCommand)
-    field.appendDeserializeCommand(deserializeCommand)
+    field.appendMetadata(COMMAND_SERIALIZE_KEY, serializeCommand)
+    field.appendMetadata(COMMAND_DESERIALIZE_KEY, deserializeCommand)
   }
 }
 

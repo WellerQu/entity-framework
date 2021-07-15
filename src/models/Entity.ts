@@ -1,4 +1,5 @@
-import { BatchExecutor } from '../metadata/BatchExecutor'
+import { COMMAND_DESERIALIZE_KEY, COMMAND_SERIALIZE_KEY } from '../annotations/constants'
+import { BatchExecutor } from '../commands/BatchExecutor'
 import { MetadataContext } from '../metadata/MetadataContext'
 
 export abstract class Entity implements model.Entity {
@@ -18,9 +19,12 @@ export abstract class Entity implements model.Entity {
     const data: model.Data = {}
     const fields = entity.getFields()
     for (let i = 0; i < fields.length; i++) {
-      const commands = fields[i].getSerializeCommands()
-      const executor = new BatchExecutor(commands)
+      const commands = fields[i].getMetadata<command.Command[]>(COMMAND_SERIALIZE_KEY)
 
+      if (!commands) 
+        continue
+
+      const executor = new BatchExecutor(commands)
       executor.exec(data, this)
     }
 
@@ -39,9 +43,12 @@ export abstract class Entity implements model.Entity {
 
     const fields = entity.getFields()
     for (let i = 0; i < fields.length; i++) {
-      const commands = fields[i].getDeserializeCommands()
-      const executor = new BatchExecutor(commands)
+      const commands = fields[i].getMetadata<command.Command[]>(COMMAND_DESERIALIZE_KEY)
 
+      if (!commands)
+        continue
+
+      const executor = new BatchExecutor(commands)
       executor.exec(data, this)
     }
   }

@@ -1,7 +1,7 @@
-export class BatchExecutor implements metadata.Executor {
-  private commands: metadata.Command[]
+export class BatchExecutor implements command.Executor {
+  private commands: command.Command[]
 
-  constructor(commands: metadata.Command[]) {
+  constructor(commands: command.Command[]) {
     this.commands = commands
     this.commands.sort((a, b) => a.priority - b.priority)
   }
