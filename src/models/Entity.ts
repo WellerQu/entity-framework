@@ -1,4 +1,4 @@
-import { BatchExecutor } from '../metadata/BatchExecutor'
+import { BatchExecutor } from '../commands/BatchExecutor'
 import { MetadataContext } from '../metadata/MetadataContext'
 
 export abstract class Entity implements model.Entity {

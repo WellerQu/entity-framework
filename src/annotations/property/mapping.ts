@@ -1,4 +1,4 @@
-import { OperationCommand } from '../../metadata/OperationCommand'
+import { OperationCommand } from '../../commands/OperationCommand'
 import { Accessor } from '../../accessor/Accessor'
 
 import { MetadataContext } from '../../metadata/MetadataContext'

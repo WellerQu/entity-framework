@@ -1,5 +1,5 @@
 import { MetadataContext } from '../../metadata/MetadataContext'
-import { OperationCommand } from '../../metadata/OperationCommand'
+import { OperationCommand } from '../../commands/OperationCommand'
 import { Prepare } from '../Prepare'
 
 type AssertDecorator = (msg?: string) => PropertyDecorator

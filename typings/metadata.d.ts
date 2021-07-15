@@ -12,20 +12,11 @@ namespace metadata {
   export interface Field {
     readonly name: string | symbol
 
-    getSerializeCommands(): Command[]
-    getDeserializeCommands(): Command[]
+    getSerializeCommands(): command.Command[]
+    getDeserializeCommands(): command.Command[]
 
-    appendSerializeCommand(command: Command): void
-    appendDeserializeCommand(command: Command): void
-  }
-
-  export interface Executor {
-    exec(data: model.Data, entity: model.Entity): void
-  }
-
-  export interface Command {
-    readonly priority: number
-    exec(data: model.Data, entity: model.Entity): void
+    appendSerializeCommand(command: command.Command): void
+    appendDeserializeCommand(command: command.Command): void
   }
 }
 
