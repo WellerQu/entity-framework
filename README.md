@@ -8,10 +8,10 @@
 
 ## 基本用法
 
-一个类声明在继承 `Entity` 后可视为一个模型声明, 该类声明的实例可以进行**序列化**与**反序列化**操作.
+一个类声明在继承 `DataModel` 后可视为一个模型声明, 该类声明的实例可以进行**序列化**与**反序列化**操作.
 
 ```typescript
-class ResponseData<T> extends Entity {
+class ResponseData<T> extends DataModel {
   @Mapping()
   public data?: T
 
@@ -65,9 +65,9 @@ expect(res.others).toBeUndefined()
 
   原生 Object 对象数据, 可通过反序列化操作填充到模型实例中.
 
-- 模型 Entity
+- 模型 DataModel
 
-  继承自 `Entity` 的类型声明, 拥有 `serialize` 与 `deserialize` 实例方法.
+  继承自 `DataModel` 的类型声明, 拥有 `serialize` 与 `deserialize` 实例方法.
 
 - 注解 Annotation
 
@@ -129,7 +129,7 @@ expect(res.others).toBeUndefined()
 - 递归数据类型映射
 
   ```typescript
-  class Pattern extends Entity {
+  class Pattern extends DataModel {
     @Mapping()
     id?: number
 
@@ -158,17 +158,17 @@ expect(res.others).toBeUndefined()
 - 映射到多维数组
 
   ```typescript
-  class LogSource extends Entity {
+  class LogSource extends DataModel {
     @Mapping()
     name?: string
   }
 
-  class Category extends Entity {
+  class Category extends DataModel {
     @Mapping()
     name?: string
   }
 
-  class Rule extends Entity {
+  class Rule extends DataModel {
     @Mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
     logSource?: LogSource
 
@@ -193,7 +193,7 @@ expect(res.others).toBeUndefined()
 - 映射到数组切片
 
   ```typescript
-  class Foo extends Entity {
+  class Foo extends DataModel {
     @Mapping({ path: 'filters[0]' })
     id?: number
 
@@ -260,12 +260,12 @@ expect(res.others).toBeUndefined()
 
 ## 自定义序列化与反序列化
 
-  使用 `@Mapping()` 注解的自动序列化与反序列化无法覆盖某些特殊场景, 此时需要在`Entity`派生类构造函数中编写自定义序列化函数(`doSerialize`)与反序列化函数(`doDeSerialize`). **一旦使用了自定义函数**, 则忽略所有注解.
+  使用 `@Mapping()` 注解的自动序列化与反序列化无法覆盖某些特殊场景, 此时需要在`DataModel`派生类构造函数中编写自定义序列化函数(`doSerialize`)与反序列化函数(`doDeSerialize`). **一旦使用了自定义函数**, 则忽略所有注解.
 
 - 自定义序列化
 
   ```typescript
-  class Company extends Entity {
+  class Company extends DataModel {
     constructor() {
       super()
 
@@ -288,7 +288,7 @@ expect(res.others).toBeUndefined()
 - 自定义反序列化
 
   ```typescript
-  class Company extends Entity {
+  class Company extends DataModel {
     constructor() {
       super()
 
