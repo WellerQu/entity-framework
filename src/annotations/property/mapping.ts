@@ -36,7 +36,7 @@ class MappingSerializeCommand extends OperationCommand {
     super(0)
   }
 
-  exec(data: model.Data, entity: model.Entity): void {
+  exec(data: model.Data, entity: model.DataModel): void {
     const descriptor = this.options.relatedEntityDescriptor
     const accessor = new Accessor(data, this.options.path)
 
@@ -48,7 +48,7 @@ class MappingSerializeCommand extends OperationCommand {
         throw new Error(`${this.fieldName.toString()} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
-      const instances = Reflect.get(entity, this.fieldName) as model.Entity[] | undefined
+      const instances = Reflect.get(entity, this.fieldName) as model.DataModel[] | undefined
       if (!instances) {
         return
       }
@@ -67,7 +67,7 @@ class MappingSerializeCommand extends OperationCommand {
         throw new Error(`${this.fieldName.toString()} 的描述 ${descriptor} 的关联实体类型不存在`)
       }
 
-      const instance = Reflect.get(entity, this.fieldName) as model.Entity | undefined
+      const instance = Reflect.get(entity, this.fieldName) as model.DataModel | undefined
       if (!instance) {
         return
       }
@@ -84,7 +84,7 @@ class MappingDeserializeCommand extends OperationCommand {
     super(0)
   }
 
-  exec(data: model.Data, entity: model.Entity): void {
+  exec(data: model.Data, entity: model.DataModel): void {
     const descriptor = this.options.relatedEntityDescriptor
     const accessor = new Accessor(data, this.options.path)
 

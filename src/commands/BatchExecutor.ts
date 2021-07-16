@@ -6,7 +6,7 @@ export class BatchExecutor implements command.Executor {
     this.commands.sort((a, b) => a.priority - b.priority)
   }
 
-  exec(data: model.Data, entity: model.Entity): void {
+  exec(data: model.Data, entity: model.DataModel): void {
     this.commands.forEach(cmd => cmd.exec(data, entity))
   }
 }

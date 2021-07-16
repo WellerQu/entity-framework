@@ -1,6 +1,6 @@
 /// <reference types="../typings/model" />
 
-import { DataEntity, Mapping, NotBeEmpty, NotBeNull, NotBeUndefined } from '../src'
+import { DataModel, Mapping, NotBeEmpty, NotBeNull, NotBeUndefined } from '../src'
 import { MetadataContext } from '../src/metadata/MetadataContext'
 
 describe('反序列化', () => {
@@ -10,7 +10,7 @@ describe('反序列化', () => {
 
   describe('@Mapping()', () => {
     it('反序列化同构数据到实例', () => {
-      class ResponseData<T> extends DataEntity {
+      class ResponseData<T> extends DataModel {
         @Mapping()
         public data?: T
 
@@ -35,7 +35,7 @@ describe('反序列化', () => {
     })
 
     it('反序列化异构数据到实例', () => {
-      class ResponseData<T> extends DataEntity {
+      class ResponseData<T> extends DataModel {
         @Mapping()
         public data?: T
 
@@ -53,7 +53,7 @@ describe('反序列化', () => {
     })
 
     it('反序列化同构复合结构数据到实例', () => {
-      class Pattern extends DataEntity {
+      class Pattern extends DataModel {
         @Mapping()
         public id?: number
 
@@ -61,7 +61,7 @@ describe('反序列化', () => {
         public strategy?: Strategy
       }
 
-      class Strategy extends DataEntity {
+      class Strategy extends DataModel {
         @Mapping()
         name?: string
 
@@ -69,7 +69,7 @@ describe('反序列化', () => {
         metric?: Metric
       }
 
-      class Metric extends DataEntity {
+      class Metric extends DataModel {
         @Mapping({ path: 'jar' })
         bar?: string
       }
@@ -87,7 +87,7 @@ describe('反序列化', () => {
     })
 
     it('反序列化同构复合结构数组到实例', () => {
-      class LogSource extends DataEntity {
+      class LogSource extends DataModel {
         @Mapping()
         name?: string
 
@@ -95,7 +95,7 @@ describe('反序列化', () => {
         categories?: Category[]
       }
 
-      class Category extends DataEntity {
+      class Category extends DataModel {
         @Mapping()
         name?: string
       }
@@ -121,17 +121,17 @@ describe('反序列化', () => {
     })
 
     it('反序列化复合结构数组的特定位置到实例 [n]', () => {
-      class LogSource extends DataEntity {
+      class LogSource extends DataModel {
         @Mapping()
         name?: string
       }
 
-      class Category extends DataEntity {
+      class Category extends DataModel {
         @Mapping()
         name?: string
       }
 
-      class Rule extends DataEntity {
+      class Rule extends DataModel {
         // logSource 使用 filters 的第 0 位置
         @Mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0]' })
         logSource?: LogSource
@@ -153,17 +153,17 @@ describe('反序列化', () => {
     })
 
     it('反序列化复合结构数组的特定位置到实例 [n][m]', () => {
-      class LogSource extends DataEntity {
+      class LogSource extends DataModel {
         @Mapping()
         name?: string
       }
 
-      class Category extends DataEntity {
+      class Category extends DataModel {
         @Mapping()
         name?: string
       }
 
-      class Rule extends DataEntity {
+      class Rule extends DataModel {
         @Mapping({ relatedEntityDescriptor: 'LogSource', path: 'filters[0][1]' })
         logSource?: LogSource
 
@@ -183,7 +183,7 @@ describe('反序列化', () => {
     })
 
     it('反序列化递归数据结构', () => {
-      class Pattern extends DataEntity {
+      class Pattern extends DataModel {
         @Mapping()
         id?: number
 
@@ -214,7 +214,7 @@ describe('反序列化', () => {
     })
 
     it('反序列化混合切片数据到实例 [n:m]', () => {
-      class Foo extends DataEntity {
+      class Foo extends DataModel {
         @Mapping({ path: 'filters[0]' })
         id?: number
 
@@ -244,7 +244,7 @@ describe('反序列化', () => {
     })
 
     it('反序列化切片数据到实例 [:]', () => {
-      class Foo extends DataEntity {
+      class Foo extends DataModel {
         @Mapping({ path: 'filters[:]' })
         filters?: number[]
       }
@@ -263,7 +263,7 @@ describe('反序列化', () => {
     })
 
     it('反序列化切片数据到实例 []', () => {
-      class Foo extends DataEntity {
+      class Foo extends DataModel {
         @Mapping({ path: 'filters[]' })
         filters?: number[]
       }
@@ -282,7 +282,7 @@ describe('反序列化', () => {
     })
 
     it('反序列化切片数据到实例 [n:]', () => {
-      class Foo extends DataEntity {
+      class Foo extends DataModel {
         @Mapping({ path: 'filters[2:]' })
         filters?: number[]
       }
@@ -301,7 +301,7 @@ describe('反序列化', () => {
     })
 
     it('反序列化切片数据到实例 [:m]', () => {
-      class Foo extends DataEntity {
+      class Foo extends DataModel {
         @Mapping({ path: 'filters[:4]' })
         filters?: number[]
       }
@@ -320,7 +320,7 @@ describe('反序列化', () => {
     })
 
     it('反序列化间接继承 Entity 的类型实例', () => {
-      class Foo extends DataEntity {
+      class Foo extends DataModel {
         @Mapping()
         id?: number
 
@@ -351,7 +351,7 @@ describe('反序列化', () => {
     })
 
     it('反序列化支持symbol数据类型', () => {
-      class Employee extends DataEntity {
+      class Employee extends DataModel {
         @Mapping({ path: 'idList' })
         [Symbol.iterator]?: string[]
       }
@@ -365,7 +365,7 @@ describe('反序列化', () => {
     })
 
     it('自定义序列化过程', () => {
-      class Company extends DataEntity {
+      class Company extends DataModel {
         constructor() {
           super()
 
@@ -388,7 +388,7 @@ describe('反序列化', () => {
 
   describe('@NotBeNull()', () => {
     it('默认错误信息', () => {
-      class Employee extends DataEntity {
+      class Employee extends DataModel {
         @NotBeNull()
         @Mapping()
         id?: number | null = null
@@ -405,7 +405,7 @@ describe('反序列化', () => {
     })
 
     it('自定义错误信息', () => {
-      class Employee extends DataEntity {
+      class Employee extends DataModel {
         @NotBeNull('忘了写id, 忘了写id, 忘了写id, 重要的事情说三遍!')
         @Mapping()
         id?: number | null = null
@@ -424,7 +424,7 @@ describe('反序列化', () => {
 
   describe('@NotBeUndefined()', () => {
     it('默认错误信息', () => {
-      class Employee extends DataEntity {
+      class Employee extends DataModel {
         @NotBeUndefined()
         @Mapping()
         id?: number
@@ -441,7 +441,7 @@ describe('反序列化', () => {
     })
 
     it('自定义错误信息', () => {
-      class Employee extends DataEntity {
+      class Employee extends DataModel {
         @NotBeUndefined('忘了写id, 忘了写id, 忘了写id, 重要的事情说三遍!')
         @Mapping()
         id?: number
@@ -460,7 +460,7 @@ describe('反序列化', () => {
 
   describe('@NotBeEmpty()', () => {
     it('默认错误信息', () => {
-      class Employee extends DataEntity {
+      class Employee extends DataModel {
         @NotBeEmpty()
         @Mapping()
         id?: number | null = null
@@ -477,7 +477,7 @@ describe('反序列化', () => {
     })
 
     it('自定义错误信息', () => {
-      class Employee extends DataEntity {
+      class Employee extends DataModel {
         @NotBeEmpty('id 不能为 empty')
         @Mapping()
         id?: number | null = null

@@ -28,8 +28,8 @@ export class EntityMetadata implements metadata.Entity {
     this.name = name
   }
 
-  createInstance<T extends model.Entity>(): T
-  createInstance<T extends model.Entity>(data?: model.Data): T {
+  createInstance<T extends model.DataModel>(): T
+  createInstance<T extends model.DataModel>(data?: model.Data): T {
     const instance = Object.create(this.prototype) as T
 
     if (data) {

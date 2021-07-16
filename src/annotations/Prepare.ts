@@ -2,14 +2,14 @@
 import { EntityMetadata } from '../metadata/EntityMetadata'
 import { FieldMetadata } from '../metadata/FieldMetadata'
 import { MetadataContext } from '../metadata/MetadataContext'
-import { isEntity } from '../models/isDataEntity'
+import { DataModel } from '../models/DataModel'
 
 export class Prepare {
   private field: metadata.Field
   private entity: metadata.Entity
 
   constructor(private context: MetadataContext, target: Object, property: string | symbol) {
-    if (!isEntity(target)) {
+    if (!DataModel.isDataModel(target)) {
       throw new Error('Mapping注解不能用于非 Entity 派生类型')
     }
 

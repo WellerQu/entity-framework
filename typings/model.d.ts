@@ -2,7 +2,7 @@ namespace model {
   // 变相的表达了 any , 233333
   export type Data = Record<string, Data>
 
-  export interface Entity {
+  export interface DataModel {
     /**
      * 序列化
      * @returns 原生 Object 格式的数据
