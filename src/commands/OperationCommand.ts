@@ -8,5 +8,5 @@ export abstract class OperationCommand implements command.Command {
     this.$priority = priority
   }
 
-  abstract exec(data: model.Data, entity: model.Entity): void
+  abstract exec(data: model.Data, entity: model.DataModel): void
 }

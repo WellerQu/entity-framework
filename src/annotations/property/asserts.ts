@@ -47,7 +47,7 @@ class AssertCommand extends OperationCommand {
     super(24)
   }
 
-  exec(_: model.Data, entity: model.Entity): void {
+  exec(_: model.Data, entity: model.DataModel): void {
     const value = Reflect.get(entity, this.fieldName)
     this.validator(value, this.message)
   }

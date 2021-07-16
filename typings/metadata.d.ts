@@ -6,7 +6,7 @@ namespace metadata {
     getFields(): Field[]
     setField(field: Field): void
 
-    createInstance<T extends model.Entity>(data?: model.Data): T
+    createInstance<T extends model.DataModel>(data?: model.Data): T
   }
 
   export interface Field {
