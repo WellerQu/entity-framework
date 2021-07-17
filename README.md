@@ -81,6 +81,10 @@ expect(res.others).toBeUndefined()
 
   命令分为序列化命令与反序列化命令, 在执行序列化操作时, 所有的序列化命令按优先级(priority)升序执行; 执行反序列化操作时, 所有的反序列化命令按优先级(priority)升序执行.
 
+- 资源 Resource
+
+  映射服务端提供的 API 接口
+
 - 数据访问路径 DataAccessorPath
 
   描述数据在映射数据结构中所在位置的拥有特定语法的的字符串.
@@ -257,6 +261,56 @@ expect(res.others).toBeUndefined()
 - `@NotBeEmpty(msg?: string)`
 
   在 `Serialize` 或 `Deserialize` 时断言实例字段不会为 `null` 或 `undefined`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出. 等价于同时使用 `@NotBeNull() @NotBeUndefined()`
+
+### 资源注解
+
+  映射服务端 API 地址
+
+- `@Resource(url: string, id: string | symbol, ResponseModel?: { new(): model.DataModel })`
+
+  ```typescript
+  @Resource('/v1/api/create', 'create', Metric)
+  class MetricPost extends RequestBean {
+    @Mapping({ path: 'metricId' })
+    id?: string
+    @Mapping({ path: 'metricName' })
+    name?: string
+  }
+  ```
+
+  上述示例中, `RequestBean` 是一个实现了 `fetch` 抽象方法的 `ResourceModel`
+
+  ```typescript
+  class RequestBean extends ResourceModel {
+    // @override
+    protected fetch<T>(url: string, options: RequestOptions): Promise<T> {
+      // 发起请求
+      return Promise.resolve<T>({ /* 返回数据 */})
+    }
+  }
+  ```
+
+  而 `ResourceModel` 提供了 `get`, `post`, `put`, `patch`, `delete` 五个方法, 对应着`http method`谓词.
+
+  | API | 参数说明 |
+  | -- | -- |
+  | `get<T>(id: string, headers?: RequestInit['headers']): Promise<T>` | 以 GET 的方式发起请求 |
+  | `post<T>(id: string, headers?: RequestInit['headers']): Promise<T>` | 以 POST 的方式发起请求 |
+  | `put<T>(id: string, headers?: RequestInit['headers']): Promise<T>` | 以 PUT 的方式发起请求 |
+  | `patch<T>(id: string, headers?: RequestInit['headers']): Promise<T>` | 以 PATCH 的方式发起请求 |
+  | `delete<T>(id: string, headers?: RequestInit['headers']): Promise<T>` | 以 DELETE 的方式发起请求 |
+
+  ```typescript
+  const bean = new MetricPost()
+  bean.id = '123'
+  bean.name = 'bean'
+
+  bean.post('create)
+  ```
+
+  当调用`post`方法时, `bean` 实例上的数据会按照`@Mapping`注解的映射规则, 序列化为特定的格式填充在 `RequestOptions` 的 `body` 字段上
+
+  更多用法请参考测试用例 `test/resource.spec.ts`
 
 ## 自定义序列化与反序列化
 

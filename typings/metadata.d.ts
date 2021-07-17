@@ -17,12 +17,21 @@ namespace metadata {
     clear(): void
   }
 
+  export type Resource = {
+    id: string | symbol
+    url: string,
+    ResponseType?: { new(): model.DataModel }
+  }
+
   export interface Entity extends Metadata {
     readonly name: string
 
     getField(name: Field['name']): Field | undefined
     getFields(): Field[]
     setField(field: Field): void
+
+    setResource(id: Resource['id'], resource: Resource): void
+    getResource(id: Resource['id']): Resource | undefined
 
     createInstance<T extends model.DataModel>(data?: model.Data): T
   }
@@ -37,7 +46,6 @@ namespace metadata {
      */
     append<T extends unknown>(key: string | symbol, data: T): ThisType
   }
-
 }
 
 export as namespace metadata
