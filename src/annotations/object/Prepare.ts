@@ -1,15 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { EntityMetadata } from '../../metadata/EntityMetadata'
-import { FieldMetadata } from '../../metadata/FieldMetadata'
 import { MetadataContext } from '../../metadata/MetadataContext'
 
 export class Prepare {
-  private field: metadata.Field
   private entity: metadata.Entity
 
-  constructor(private context: MetadataContext, target: Object, property: string | symbol) {
-    const entityName = target.constructor.name
-    const fieldName = property
+  constructor(private context: MetadataContext, target: Function) {
+    const entityName = target.name
 
     const entity = this.context.getEntity(entityName)
     if (!entity) {
@@ -18,21 +15,9 @@ export class Prepare {
     } else {
       this.entity = entity
     }
-
-    const field = this.entity.getField(fieldName)
-    if (!field) {
-      this.field = new FieldMetadata(fieldName)
-      this.entity.setField(this.field)
-    } else {
-      this.field = field
-    }
   }
 
   getEntity(): metadata.Entity {
     return this.entity
-  }
-
-  getField(): metadata.Field {
-    return this.field
   }
 }

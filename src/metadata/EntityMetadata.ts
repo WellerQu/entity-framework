@@ -2,6 +2,7 @@ import { Metadata } from './Metadata'
 import { MetadataContext } from './MetadataContext'
 
 const FIELDS_KEY = Symbol.for('fields key')
+const RESOURCES_KEY = Symbol.for('resources key')
 
 export class EntityMetadata extends Metadata implements metadata.Entity {
   readonly name: string
@@ -30,6 +31,7 @@ export class EntityMetadata extends Metadata implements metadata.Entity {
 
     this.name = name
     this.setMetadata(FIELDS_KEY, new Map<metadata.Field['name'], metadata.Field>())
+    this.setMetadata(RESOURCES_KEY, new Map<metadata.Resource['id'], metadata.Resource>())
   }
 
   clear(): void {
@@ -73,5 +75,13 @@ export class EntityMetadata extends Metadata implements metadata.Entity {
 
   setField(field: metadata.Field): void {
     this.getMetadata<Map<metadata.Field['name'], metadata.Field>>(FIELDS_KEY)?.set(field.name, field)
+  }
+
+  setResource(id: string | symbol, resource: metadata.Resource): void {
+    this.getMetadata<Map<metadata.Resource['id'], metadata.Resource>>(RESOURCES_KEY)?.set(id, resource)
+  }
+
+  getResource(id: string | symbol): metadata.Resource | undefined {
+    return this.getMetadata<Map<metadata.Resource['id'], metadata.Resource>>(RESOURCES_KEY)?.get(id)
   }
 }

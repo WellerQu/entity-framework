@@ -6,11 +6,6 @@ export abstract class DataModel implements model.DataModel {
   protected doSerialize?: () => model.Data
   protected doDeSerialize?: (data: model.Data) => void
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  static isDataModel(instance: Object): instance is DataModel {
-    return ('serialize' in instance && 'deserialize' in instance)
-  }
-
   serialize(): model.Data {
     if (this.doSerialize) {
       return this.doSerialize()
