@@ -1,7 +1,5 @@
 # Entity Framework
 
-[![CI](https://github.com/WellerQu/entity-framework/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/WellerQu/entity-framework/actions/workflows/main.yml)
-
 > Enables experimental support for decorators, which is in stage 2 of the TC39 standardization process.
 
 [see more about experimentalDecorators](https://www.typescriptlang.org/tsconfig#experimentalDecorators)
