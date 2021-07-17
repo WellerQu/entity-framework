@@ -21,74 +21,86 @@ export abstract class ResourceModel extends DataModel implements model.ResourceM
     return resource
   }
 
-  private result<T>(resource: metadata.Resource, responseData: unknown): T {
-    if (!resource.ResponseType) {
-      return responseData as T
+  private result<T extends model.DataModel>(responseData: unknown, ResponseType?: { new(): T }): T | unknown {
+    if (ResponseType && Object.getPrototypeOf(ResponseType) === DataModel) {
+      const instance = new ResponseType()
+      instance.deserialize(responseData)
+
+      return instance
     }
 
-    const instance = new resource.ResponseType()
-    instance.deserialize(responseData ?? {})
-
-    return instance as unknown as T
+    return responseData
   }
 
-  async get<T>(resourceId: metadata.Resource['id'], headers?: Headers): Promise<T> {
+  protected headers: HeadersInit = {}
+
+  setHeaders(headers: HeadersInit) {
+    this.headers = headers
+    return this
+  }
+
+  get<T>(resourceId: string | symbol): Promise<T>
+  get<T extends model.DataModel>(resourceId: string | symbol, ResponseType: new () => T): Promise<T>
+  get<T>(resourceId: any, ResponseType?: any): Promise<unknown> | Promise<T> {
     const resource = this.getResourceById(resourceId)
 
-    const responseData = await this.fetch<T>(resource.url, {
-      headers,
+    return this.fetch<T>(resource.url, {
+      headers: this.headers,
       method: 'GET',
       params: this.serialize()
     })
-
-    return this.result(resource, responseData)
+      .then(responseData => this.result(responseData, ResponseType))
   }
 
-  async post<T>(resourceId: metadata.Resource['id'], headers?: Headers): Promise<T> {
+  post<T>(resourceId: string | symbol): Promise<T>
+  post<T extends model.DataModel>(resourceId: string | symbol, ResponseType: new () => T): Promise<T>
+  post<T>(resourceId: any, ResponseType?: any): Promise<unknown> | Promise<T> {
     const resource = this.getResourceById(resourceId)
 
-    const responseData = await this.fetch(resource.url, {
-      headers,
+    return this.fetch<T>(resource.url, {
+      headers: this.headers,
       method: 'POST',
       body: this.serialize()
     })
-
-    return this.result(resource, responseData)
+      .then(responseData => this.result(responseData, ResponseType))
   }
 
-  async put<T>(resourceId: string | symbol, headers?: Headers): Promise<T> {
+  put<T>(resourceId: string | symbol): Promise<T>
+  put<T extends model.DataModel>(resourceId: string | symbol, ResponseType: new () => T): Promise<T>
+  put<T>(resourceId: any, ResponseType?: any): Promise<unknown> | Promise<T> {
     const resource = this.getResourceById(resourceId)
 
-    const responseData = await this.fetch<T>(resource.url, {
-      headers,
+    return this.fetch<T>(resource.url, {
+      headers: this.headers,
       method: 'PUT',
       body: this.serialize()
     })
-
-    return this.result(resource, responseData)
+      .then(responseData => this.result(responseData, ResponseType))
   }
 
-  async patch<T>(resourceId: string | symbol, headers?: Headers): Promise<T> {
+  patch<T>(resourceId: string | symbol): Promise<T>
+  patch<T extends model.DataModel>(resourceId: string | symbol, ResponseType: new () => T): Promise<T>
+  patch<T>(resourceId: any, ResponseType?: any): Promise<unknown> | Promise<T> {
     const resource = this.getResourceById(resourceId)
 
-    const responseData = await this.fetch<T>(resource.url, {
-      headers,
+    return this.fetch<T>(resource.url, {
+      headers: this.headers,
       method: 'PATCH',
       body: this.serialize()
     })
-
-    return this.result(resource, responseData)
+      .then(responseData => this.result(responseData, ResponseType))
   }
 
-  async delete<T>(resourceId: string | symbol, headers?: Headers): Promise<T> {
+  delete<T>(resourceId: string | symbol): Promise<T>
+  delete<T extends model.DataModel>(resourceId: string | symbol, ResponseType?: new () => T): Promise<T>
+  delete<T>(resourceId: any, ResponseType?: any): Promise<unknown> | Promise<T> {
     const resource = this.getResourceById(resourceId)
 
-    const responseData = await this.fetch<T>(resource.url, {
-      headers,
+    return this.fetch<T>(resource.url, {
+      headers: this.headers,
       method: 'DELETE',
       body: this.serialize()
     })
-
-    return this.result(resource, responseData)
+      .then(responseData => this.result(responseData, ResponseType))
   }
 }
