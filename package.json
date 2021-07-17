@@ -4,7 +4,7 @@
   "description": "实体数据框架",
   "main": "dist/index.js",
   "typings": "dist",
-  "repository": "git@github.com:WellerQu/entity-framework.git",
+  "repository": "git@code.bizseer.com:frontend/entity-framework.git",
   "scripts": {
     "prepare": "husky install",
     "build": "rm -rf dist && tsc --build tsconfig.json",
@@ -31,5 +31,8 @@
   "files": [
     "dist",
     "typings"
-  ]
+  ],  
+  "publishConfig": {
+    "registry": "https://nexus.bizseer.com/repository/npm-private"
+  }
 }
