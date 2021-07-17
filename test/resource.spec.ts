@@ -203,4 +203,21 @@ describe('resource', () => {
     expect(responseBean.id).toBe('256')
     expect(responseBean.ruleId).toBe(123)
   })
+
+  it('origin data', async () => {
+    @Resource('/v1/api/delete', 'delete')
+    class MetricDelete extends RequestBean {
+      @Mapping({ path: 'metricId' })
+      id?: string
+      @Mapping({ path: 'metricName' })
+      name?: string
+    }
+
+    const bean = new MetricDelete()
+    bean.id = '123'
+    bean.name = 'bean'
+
+    const originData = await bean.delete<{ metricId: string }>('delete')
+    expect(originData.metricId).toBe('256')
+  })
 })
