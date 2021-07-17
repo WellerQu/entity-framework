@@ -1,0 +1,38 @@
+{
+  "name": "entity-framework",
+  "version": "1.0.0",
+  "description": "实体数据框架",
+  "main": "dist/index.js",
+  "typings": "dist",
+  "repository": "git@code.bizseer.com:frontend/entity-framework.git",
+  "scripts": {
+    "prepare": "husky install",
+    "build": "rm -rf dist && tsc --build tsconfig.json",
+    "lint": "eslint src/**/* --fix",
+    "prepublishOnly": "npm run lint && npm run build",
+    "test": "jest"
+  },
+  "author": "nixon",
+  "license": "ISC",
+  "devDependencies": {
+    "@commitlint/cli": "^12.1.1",
+    "@commitlint/config-conventional": "^12.1.1",
+    "@types/jest": "^26.0.24",
+    "@typescript-eslint/eslint-plugin": "^4.14.0",
+    "@typescript-eslint/parser": "^4.14.0",
+    "eslint": "^7.18.0",
+    "husky": "^6.0.0",
+    "jest": "^26.6.3",
+    "lint-staged": "^10.5.3",
+    "ts-jest": "^26.5.0",
+    "tslib": "^2.1.0",
+    "typescript": "^4.1.3"
+  },
+  "files": [
+    "dist",
+    "typings"
+  ],
+  "publishConfig": {
+    "registry": "https://nexus.bizseer.com/repository/npm-private"
+  }
+}
