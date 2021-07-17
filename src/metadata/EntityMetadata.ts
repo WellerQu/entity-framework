@@ -1,12 +1,12 @@
+import { Metadata } from './Metadata'
 import { MetadataContext } from './MetadataContext'
 
-/* eslint-disable @typescript-eslint/ban-types */
-export class EntityMetadata implements metadata.Entity {
+const FIELDS_KEY = Symbol.for('fields key')
+
+export class EntityMetadata extends Metadata implements metadata.Entity {
   readonly name: string
 
-  private fieldsMap = new Map<metadata.Field['name'], metadata.Field>()
-
-  private getBaseFields(): metadata.Field[] {
+  private getInheritFields(): metadata.Field[] {
     const fields: metadata.Field[] = []
 
     let proto = Object.getPrototypeOf(this.prototype)
@@ -24,8 +24,16 @@ export class EntityMetadata implements metadata.Entity {
     return fields
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   constructor(name: string, private prototype: object) {
+    super()
+
     this.name = name
+    this.setMetadata(FIELDS_KEY, new Map<metadata.Field['name'], metadata.Field>())
+  }
+
+  clear(): void {
+    this.getMetadata<Map<metadata.Field['name'], metadata.Field>>(FIELDS_KEY)?.clear()
   }
 
   createInstance<T extends model.DataModel>(): T
@@ -40,12 +48,17 @@ export class EntityMetadata implements metadata.Entity {
   }
 
   getField(name: metadata.Field['name']): metadata.Field | undefined {
-    return this.fieldsMap.get(name) ?? this.getBaseFields().find(item => item.name === name)
+    return this.getMetadata<Map<metadata.Field['name'], metadata.Field>>(FIELDS_KEY)?.get(name) 
+      ?? this.getInheritFields().find(item => item.name === name)
   }
 
   getFields(): metadata.Field[] {
-    const fields: metadata.Field[] = this.getBaseFields()
-    const records = this.fieldsMap.values()
+    const fields: metadata.Field[] = this.getInheritFields()
+
+    const records = this.getMetadata<Map<metadata.Field['name'], metadata.Field>>(FIELDS_KEY)?.values()
+    if (!records) {
+      return fields
+    }
 
     for (const field of records) {
       if (!field) {
@@ -59,6 +72,6 @@ export class EntityMetadata implements metadata.Entity {
   }
 
   setField(field: metadata.Field): void {
-    this.fieldsMap.set(field.name, field)
+    this.getMetadata<Map<metadata.Field['name'], metadata.Field>>(FIELDS_KEY)?.set(field.name, field)
   }
 }

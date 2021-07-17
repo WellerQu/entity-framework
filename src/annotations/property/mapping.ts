@@ -1,8 +1,8 @@
-import { OperationCommand } from '../../commands/OperationCommand'
+import { Command } from '../../commands/Command'
 import { Accessor } from '../../accessor/Accessor'
 
 import { MetadataContext } from '../../metadata/MetadataContext'
-import { Prepare } from '../Prepare'
+import { Prepare } from './Prepare'
 import { COMMAND_DESERIALIZE_KEY, COMMAND_SERIALIZE_KEY } from '../constants'
 
 type MappingOptions = {
@@ -27,11 +27,11 @@ export const Mapping: MappingDecorator = options => (target, property) => {
   const serializeCommand = new MappingSerializeCommand(mergedOptions, field.name)
   const deserializeCommand = new MappingDeserializeCommand(mergedOptions, field.name)
 
-  field.appendMetadata(COMMAND_SERIALIZE_KEY, serializeCommand)
-  field.appendMetadata(COMMAND_DESERIALIZE_KEY, deserializeCommand)
+  field.append(COMMAND_SERIALIZE_KEY, serializeCommand)
+  field.append(COMMAND_DESERIALIZE_KEY, deserializeCommand)
 }
 
-class MappingSerializeCommand extends OperationCommand {
+class MappingSerializeCommand extends Command {
   constructor(private options: MappingOptions, private fieldName: metadata.Field['name']) {
     super(0)
   }
@@ -79,7 +79,7 @@ class MappingSerializeCommand extends OperationCommand {
   }
 }
 
-class MappingDeserializeCommand extends OperationCommand {
+class MappingDeserializeCommand extends Command {
   constructor(private options: MappingOptions, private fieldName: metadata.Field['name']) {
     super(0)
   }

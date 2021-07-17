@@ -1,4 +1,4 @@
-export abstract class OperationCommand implements command.Command {
+export abstract class Command implements command.Command {
   private $priority: number
   public get priority(): number {
     return this.$priority

@@ -1,31 +1,24 @@
-export class MetadataContext {
+import { Metadata } from './Metadata'
+
+const ENTITIES_KEY = Symbol.for('entities key')
+
+export class MetadataContext extends Metadata {
   static instance = new MetadataContext()
 
-  private entitiesMap: Map<string, metadata.Entity>
-
   private constructor() {
-    this.entitiesMap = new Map<string, metadata.Entity>()
+    super()
+    this.setMetadata(ENTITIES_KEY, new Map<string | symbol, metadata.Entity>())
   }
 
   getEntity(key: string): metadata.Entity | undefined {
-    return this.entitiesMap.get(key)
+    return this.getMetadata<Map<string | symbol, metadata.Entity>>(ENTITIES_KEY)?.get(key)
   }
 
   setEntity(key: string, entity: metadata.Entity): void {
-    this.entitiesMap.set(key, entity)
-  }
-
-  aliasEntity(origin: string, alias: string): void {
-    const entity = this.entitiesMap.get(origin)
-
-    if (!entity) {
-      return
-    }
-
-    this.entitiesMap.set(alias, entity)
+    this.getMetadata<Map<string | symbol, metadata.Entity>>(ENTITIES_KEY)?.set(key, entity)
   }
 
   clear(): void {
-    this.entitiesMap.clear()
+    this.getMetadata<Map<string | symbol, metadata.Entity>>(ENTITIES_KEY)?.clear()
   }
 }

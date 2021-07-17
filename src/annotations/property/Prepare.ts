@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { EntityMetadata } from '../metadata/EntityMetadata'
-import { FieldMetadata } from '../metadata/FieldMetadata'
-import { MetadataContext } from '../metadata/MetadataContext'
-import { DataModel } from '../models/DataModel'
+import { EntityMetadata } from '../../metadata/EntityMetadata'
+import { FieldMetadata } from '../../metadata/FieldMetadata'
+import { MetadataContext } from '../../metadata/MetadataContext'
+import { DataModel } from '../../models/DataModel'
 
 export class Prepare {
   private field: metadata.Field
