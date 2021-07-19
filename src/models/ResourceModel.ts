@@ -22,7 +22,7 @@ export abstract class ResourceModel extends DataModel implements model.ResourceM
   }
 
   private result<T extends model.DataModel>(responseData: unknown, ResponseType?: { new(): T }): T | unknown {
-    if (ResponseType && Object.getPrototypeOf(ResponseType) === DataModel) {
+    if (ResponseType && DataModel.isInheritDataModel(Object.getPrototypeOf(ResponseType))) {
       const instance = new ResponseType()
       instance.deserialize(responseData)
 
@@ -32,16 +32,20 @@ export abstract class ResourceModel extends DataModel implements model.ResourceM
     return responseData
   }
 
-  protected headers: HeadersInit = {}
+  protected headers?: HeadersInit
 
-  setHeaders(headers: HeadersInit) {
+  setHeaders(headers: HeadersInit): this {
     this.headers = headers
     return this
   }
 
+  getHeaders(): HeadersInit | undefined {
+    return this.headers
+  }
+
   get<T>(resourceId: string | symbol): Promise<T>
   get<T extends model.DataModel>(resourceId: string | symbol, ResponseType: new () => T): Promise<T>
-  get<T>(resourceId: any, ResponseType?: any): Promise<unknown> | Promise<T> {
+  get<T>(resourceId: string | symbol, ResponseType?: new () => model.DataModel): Promise<unknown> | Promise<T> {
     const resource = this.getResourceById(resourceId)
 
     return this.fetch<T>(resource.url, {
@@ -54,7 +58,7 @@ export abstract class ResourceModel extends DataModel implements model.ResourceM
 
   post<T>(resourceId: string | symbol): Promise<T>
   post<T extends model.DataModel>(resourceId: string | symbol, ResponseType: new () => T): Promise<T>
-  post<T>(resourceId: any, ResponseType?: any): Promise<unknown> | Promise<T> {
+  post<T>(resourceId: string | symbol, ResponseType?: new () => model.DataModel): Promise<unknown> | Promise<T> {
     const resource = this.getResourceById(resourceId)
 
     return this.fetch<T>(resource.url, {
@@ -67,7 +71,7 @@ export abstract class ResourceModel extends DataModel implements model.ResourceM
 
   put<T>(resourceId: string | symbol): Promise<T>
   put<T extends model.DataModel>(resourceId: string | symbol, ResponseType: new () => T): Promise<T>
-  put<T>(resourceId: any, ResponseType?: any): Promise<unknown> | Promise<T> {
+  put<T>(resourceId: string | symbol, ResponseType?: new () => model.DataModel): Promise<unknown> | Promise<T> {
     const resource = this.getResourceById(resourceId)
 
     return this.fetch<T>(resource.url, {
@@ -80,7 +84,7 @@ export abstract class ResourceModel extends DataModel implements model.ResourceM
 
   patch<T>(resourceId: string | symbol): Promise<T>
   patch<T extends model.DataModel>(resourceId: string | symbol, ResponseType: new () => T): Promise<T>
-  patch<T>(resourceId: any, ResponseType?: any): Promise<unknown> | Promise<T> {
+  patch<T>(resourceId: string | symbol, ResponseType?: new () => model.DataModel): Promise<unknown> | Promise<T> {
     const resource = this.getResourceById(resourceId)
 
     return this.fetch<T>(resource.url, {
@@ -93,7 +97,7 @@ export abstract class ResourceModel extends DataModel implements model.ResourceM
 
   delete<T>(resourceId: string | symbol): Promise<T>
   delete<T extends model.DataModel>(resourceId: string | symbol, ResponseType?: new () => T): Promise<T>
-  delete<T>(resourceId: any, ResponseType?: any): Promise<unknown> | Promise<T> {
+  delete<T>(resourceId: string | symbol, ResponseType?: new () => model.DataModel): Promise<unknown> | Promise<T> {
     const resource = this.getResourceById(resourceId)
 
     return this.fetch<T>(resource.url, {

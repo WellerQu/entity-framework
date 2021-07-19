@@ -24,6 +24,10 @@ namespace model {
      */
     setHeaders(headers?: RequestInit['headers']): ThisType
     /**
+     * 获取 Http Headers
+     */
+    getHeaders(): RequestInit['headers']
+    /**
      * 以 GET 方式请求资源
      * @param resourceId 资源唯一标识
      */
@@ -52,7 +56,7 @@ namespace model {
      * @param resourceId 资源唯一标识
      */
     async delete<T>(resourceId: string | symbol): Promise<T>
-    async delete<T extends DataModel>(resourceId: string | symbol, ResponseType?: { new(): T }): Promise<T>
+    async delete<T extends DataModel>(resourceId: string | symbol, ResponseType: { new(): T }): Promise<T>
   }
 }
 
