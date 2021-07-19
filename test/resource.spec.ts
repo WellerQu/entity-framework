@@ -217,7 +217,61 @@ describe('resource', () => {
     bean.id = '123'
     bean.name = 'bean'
 
-    const originData = await bean.delete<{ metricId: string }>('delete')
-    expect(originData.metricId).toBe('256')
+    const raw = await bean.delete<{ metricId: string }>('delete')
+    expect(raw.metricId).toBe('256')
+  })
+
+  it('set Headers', async () => {
+    @Resource('/v1/api/delete', 'delete')
+    class MetricDelete extends RequestBean {
+      @Mapping({ path: 'metricId' })
+      id?: string
+      @Mapping({ path: 'metricName' })
+      name?: string
+    }
+
+    const bean = new MetricDelete()
+    bean.id = '123'
+    bean.name = 'bean'
+
+    bean.setHeaders({ token: '123' })
+    expect(bean.getHeaders()).toEqual({ token: '123' })
+  })
+
+  it('存在继承关系的请求模型', async () => {
+    class Metric extends DataModel {
+      @Mapping({ path: 'metricId' })
+      id?: string
+    }
+
+    class MetricRule extends Metric {
+      @Mapping()
+      ruleId?: number
+    }
+
+    @Resource('/v1/api/delete1', 'delete')
+    class MetricDelete extends RequestBean {
+      @Mapping({ path: 'metricId' })
+      id?: string
+      @Mapping({ path: 'metricName' })
+      name?: string
+    }
+
+    @Resource('/v1/api/delete2', 'delete')
+    class MetricRuleDelete extends MetricDelete {
+      @Mapping()
+      ruleId?: number
+    }
+
+    const bean = new MetricRuleDelete()
+    bean.id = '123'
+    bean.name = 'bean'
+    bean.ruleId = 444
+
+    // call the "delete" which url is "delete2"
+    const responseBean = await bean.delete('delete', MetricRule)
+
+    expect(responseBean.id).toBe('256')
+    expect(responseBean.ruleId).toBe(123)
   })
 })
