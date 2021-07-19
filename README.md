@@ -266,10 +266,10 @@ expect(res.others).toBeUndefined()
 
   映射服务端 API 地址
 
-- `@Resource(url: string, id: string | symbol, ResponseModel?: { new(): model.DataModel })`
+- `@Resource(url: string, id: string | symbol)`
 
   ```typescript
-  @Resource('/v1/api/create', 'create', Metric)
+  @Resource('/v1/api/create', 'create')
   class MetricPost extends RequestBean {
     @Mapping({ path: 'metricId' })
     id?: string
@@ -290,25 +290,28 @@ expect(res.others).toBeUndefined()
   }
   ```
 
-  而 `ResourceModel` 提供了 `get`, `post`, `put`, `patch`, `delete` 五个方法, 对应着`http method`谓词.
+  而 `ResourceModel` 提供了 `get`, `post`, `put`, `patch`, `delete` 五个方法, 对应着`http method`谓词. 以及一个 `setHeaders`
+  设置 `http headers` 的机会.
 
   | API | 参数说明 |
   | -- | -- |
-  | `get<T>(id: string, headers?: RequestInit['headers']): Promise<T>` | 以 GET 的方式发起请求 |
-  | `post<T>(id: string, headers?: RequestInit['headers']): Promise<T>` | 以 POST 的方式发起请求 |
-  | `put<T>(id: string, headers?: RequestInit['headers']): Promise<T>` | 以 PUT 的方式发起请求 |
-  | `patch<T>(id: string, headers?: RequestInit['headers']): Promise<T>` | 以 PATCH 的方式发起请求 |
-  | `delete<T>(id: string, headers?: RequestInit['headers']): Promise<T>` | 以 DELETE 的方式发起请求 |
+  | `setHeaders(headers: HeadersInit)` | 设置 Http 头字段 |
+  | `get<T>(id: string, ResponseModel?: { new(): model.DataModel }): Promise<T>` | 以 GET 的方式发起请求 |
+  | `post<T>(id: string, ResponseModel?: { new(): model.DataModel }): Promise<T>` | 以 POST 的方式发起请求 |
+  | `put<T>(id: string, ResponseModel?: { new(): model.DataModel }): Promise<T>` | 以 PUT 的方式发起请求 |
+  | `patch<T>(id: string, ResponseModel?: { new(): model.DataModel }): Promise<T>` | 以 PATCH 的方式发起请求 |
+  | `delete<T>(id: string, ResponseModel?: { new(): model.DataModel }): Promise<T>` | 以 DELETE 的方式发起请求 |
 
   ```typescript
   const bean = new MetricPost()
   bean.id = '123'
   bean.name = 'bean'
 
-  bean.post('create)
+  bean.post('create', Metric)
   ```
 
-  当调用`post`方法时, `bean` 实例上的数据会按照`@Mapping`注解的映射规则, 序列化为特定的格式填充在 `RequestOptions` 的 `body` 字段上
+  当调用 `post` 方法时, `bean` 实例上的数据会按照`@Mapping`注解的映射规则, 序列化为特定的格式填充在 `RequestOptions` 的 `body` 字段上.
+  在请求返回后, 会根据调用 `post` 方法时是否传递过模型来决定是否自动反序列化请求返回的响应数据. 其它方法与 `post` 类似.
 
   更多用法请参考测试用例 `test/resource.spec.ts`
 
