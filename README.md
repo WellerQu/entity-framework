@@ -159,7 +159,7 @@ expect(res.others).toBeUndefined()
   expect(data.pattern.name).toBe('P2')
   ```
 
-- 映射到多维数组
+- 将模型字段映射到多维数组
 
   ```typescript
   class LogSource extends DataModel {
@@ -194,7 +194,7 @@ expect(res.others).toBeUndefined()
   expect(data.filters?.[1][2].name).toBe('category')
   ```
 
-- 映射到数组切片
+- 将模型字段映射到对象中的数组切片
 
   ```typescript
   class Foo extends DataModel {
@@ -220,6 +220,30 @@ expect(res.others).toBeUndefined()
   expect(data.filters[1]).toBe('foo')
   expect(data.filters[2]).toBe('Hello')
   expect(data.filters[3]).toBeUndefined()
+  ```
+
+- 将模型字段直接映射到数组切片
+
+  ```typescript
+  class CategorySet extends DataModel {
+    @Mapping({ path: '[0]' })
+    id?: number
+
+    @Mapping({ path: '[1:]' })
+    categories?: string[]
+  }
+
+  const set = new CategorySet()
+  set.id = 1
+  set.categories = ['c1', 'c2', 'c3']
+
+  const data: model.Data = set.serialize([]) // !!important!! 注意, 这里需要提供初始化数据
+
+  expect(data[0]).toBe(1)
+  expect(data[1]).toBe('c1')
+  expect(data[2]).toBe('c2')
+  expect(data[3]).toBe('c3')
+  expect(data).toBeInstanceOf(Array)
   ```
 
 ## 注解

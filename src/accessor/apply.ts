@@ -40,10 +40,6 @@ export function apply(target: model.Data, expressions: accessor.Expression[], va
 
     return apply(target[expr.index], rest, value)
   } else if (isSliceExpression(expr)) {
-    if (!Array.isArray(target)) {
-      throw new Error('无法从不是数组的数据中生成切片')
-    }
-
     if (rest.length === 0 && value !== undefined) {
       if (!Array.isArray(value)) {
         throw new Error('无法将不是数组的数据赋值到切片')
@@ -71,7 +67,7 @@ export function apply(target: model.Data, expressions: accessor.Expression[], va
     const returnValue: unknown[] = []
 
     for (let i = start; i < end; i++) {
-      returnValue.push(target[i], rest, value)
+      returnValue.push(apply(target[i], rest, value))
     }
 
     return returnValue
