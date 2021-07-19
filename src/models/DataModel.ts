@@ -21,17 +21,17 @@ export abstract class DataModel implements model.DataModel {
     return false
   }
 
-  serialize(): model.Data {
+  serialize(initial: model.Data = {}): model.Data {
     if (this.doSerialize) {
       return this.doSerialize()
     }
 
     const entity = MetadataContext.instance.getEntity(this.constructor.name)
     if (!entity) {
-      return {}
+      return
     }
 
-    const data: model.Data = {}
+    const data: model.Data = initial
     const fields = entity.getFields()
     for (let i = 0; i < fields.length; i++) {
       const commands = fields[i].getMetadata<command.Command[]>(COMMAND_SERIALIZE_KEY)

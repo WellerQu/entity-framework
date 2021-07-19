@@ -52,6 +52,24 @@ describe('反序列化', () => {
       expect(res.msg).toBe(data.message)
     })
 
+    it('反序列化多级异构数据到实例', () => {
+      class ResponseData<T> extends DataModel {
+        @Mapping()
+        public data?: T
+
+        @Mapping({ path: 'a.b.c.message' })
+        public msg?: string
+      }
+
+      const data: model.Data = { data: false, a: { b: { c: { message: 'success' } } } }
+
+      const res = new ResponseData<boolean>()
+      res.deserialize(data)
+
+      expect(res.data).toBe(false)
+      expect(res.msg).toBe('success')
+    })
+
     it('反序列化同构复合结构数据到实例', () => {
       class Pattern extends DataModel {
         @Mapping()
@@ -118,6 +136,44 @@ describe('反序列化', () => {
       expect(logSource.categories?.[0]).toBeInstanceOf(Category)
       expect(logSource.categories?.[1].name).toBe('c2')
       expect(logSource.categories?.[1]).toBeInstanceOf(Category)
+    })
+
+    it('反序列化数组结构数据到实例', () => {
+      class CategorySet extends DataModel {
+        @Mapping({ path: '[]' })
+        categories?: string[]
+      }
+
+      const data: model.Data =  ['c1', 'c2', 'c3']
+
+      const set = new CategorySet()
+      set.deserialize(data)
+
+      expect(set.categories?.[0]).toBe('c1')
+      expect(set.categories?.[1]).toBe('c2')
+      expect(set.categories?.[2]).toBe('c3')
+      expect(set.categories).toBeInstanceOf(Array)
+    })
+
+    it('反序列化数组结构数据到实例', () => {
+      class CategorySet extends DataModel {
+        @Mapping({ path: '[0]' })
+        id?: number
+
+        @Mapping({ path: '[1:]' })
+        categories?: string[]
+      }
+
+      const data: model.Data = [24, 'c1', 'c2', 'c3']
+
+      const set = new CategorySet()
+      set.deserialize(data)
+
+      expect(set.id).toBe(24)
+      expect(set.categories?.[0]).toBe('c1')
+      expect(set.categories?.[1]).toBe('c2')
+      expect(set.categories?.[2]).toBe('c3')
+      expect(set.categories).toBeInstanceOf(Array)
     })
 
     it('反序列化复合结构数组的特定位置到实例 [n]', () => {

@@ -5,9 +5,10 @@ namespace model {
   export interface DataModel {
     /**
      * 序列化
+     * @param initial 原生 Object 数据的初始化引用
      * @returns 原生 Object 格式的数据
      */
-    serialize(): Data
+    serialize(initial?: Data): Data
 
     /**
      * 反序列化

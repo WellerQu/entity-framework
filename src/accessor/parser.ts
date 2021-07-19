@@ -42,11 +42,6 @@ export function parse(path: string): accessor.Expression[] {
       })
     }
     else if (current.type === 'definitive') {
-      const top = analysis[analysis.length - 1]
-      if (!top) {
-        throw new Error('语法错误, 不是预期的栈顶')
-      }
-
       const definitive = resolveDefinitive(current.term)
       if (Array.isArray(definitive)) {
         analysis.push({

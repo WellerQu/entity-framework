@@ -45,12 +45,32 @@ describe('序列化', () => {
       }
 
       const res = new ResponseData<boolean>()
-      const data: model.Data = { data: true, message: 'success', code: 0 }
+      res.data = false
+      res.msg = 'success'
 
-      res.deserialize(data)
+      const data: model.Data = res.serialize()
 
-      expect(res.data).toBe(data.data)
-      expect(res.msg).toBe(data.message)
+      expect(data.data).toBe(false)
+      expect(data.message).toBe('success')
+    })
+
+    it('序列化实例成多级异构数据', () => {
+      class ResponseData<T> extends DataModel {
+        @Mapping()
+        public data?: T
+
+        @Mapping({ path: 'a.b.c.message' })
+        public msg?: string
+      }
+
+      const res = new ResponseData<boolean>()
+      res.data = false
+      res.msg = 'success'
+
+      const data: model.Data = res.serialize()
+
+      expect(data.data).toBe(false)
+      expect(data.a.b.c.message).toBe('success')
     })
 
     it('序列化实例到同构复合结构数据', () => {
@@ -118,6 +138,45 @@ describe('序列化', () => {
       expect(data.categories).toHaveLength(2)
       expect(data.categories?.[0].name).toBe('c1')
       expect(data.categories?.[1].name).toBe('c2')
+    })
+
+    it('序列化实例到数组结构数据 [提供初始化引用]', () => {
+      class CategorySet extends DataModel {
+        @Mapping({ path: '[]' })
+        categories?: string[]
+      }
+
+      const set = new CategorySet()
+      set.categories = ['c1', 'c2', 'c3']
+
+      const data: model.Data = set.serialize([])
+
+      expect(data[0]).toBe('c1')
+      expect(data[1]).toBe('c2')
+      expect(data[2]).toBe('c3')
+      expect(data).toBeInstanceOf(Array)
+    })
+
+    it('序列化实例数据到数组结构 [提供初始化引用]', () => {
+      class CategorySet extends DataModel {
+        @Mapping({ path: '[0]' })
+        id?: number
+
+        @Mapping({ path: '[1:]' })
+        categories?: string[]
+      }
+
+      const set = new CategorySet()
+      set.id = 1
+      set.categories = ['c1', 'c2', 'c3']
+
+      const data: model.Data = set.serialize([])
+
+      expect(data[0]).toBe(1)
+      expect(data[1]).toBe('c1')
+      expect(data[2]).toBe('c2')
+      expect(data[3]).toBe('c3')
+      expect(data).toBeInstanceOf(Array)
     })
 
     it('序列化实例到复合结构数组的特定位置 [n]', () => {
@@ -319,7 +378,7 @@ describe('序列化', () => {
       expect(data.filters[4]).toBeUndefined()
     })
 
-    it('序列化间接继承 Entity 的类型实例', () => {
+    it('序列化间接继承 DataModel 的类型实例', () => {
       class Foo extends DataModel {
         @Mapping()
         id?: number
