@@ -243,6 +243,9 @@ describe('序列化', () => {
 
       const data: model.Data = rule.serialize()
 
+      expect(data.filters).toBeInstanceOf(Array)
+      expect(data.filters[0]).toBeInstanceOf(Array)
+      expect(data.filters[1]).toBeInstanceOf(Array)
       expect(data.filters?.[0][1].name).toBe('logSource')
       expect(data.filters?.[1][2].name).toBe('category')
     })
