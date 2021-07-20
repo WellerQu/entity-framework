@@ -20,14 +20,27 @@ type MappingOptions = {
 type MappingDecorator = (options?: Partial<MappingOptions>) => PropertyDecorator
 
 export const Mapping: MappingDecorator = options => (target, property) => {
+  Serialize(options)(target, property)
+  Deserialize(options)(target, property)
+}
+
+export const Serialize: MappingDecorator = options => (target, property) => {
   const mergedOptions: MappingOptions = { ...options, path: options?.path ?? property.toString() }
   const prepare = new Prepare(MetadataContext.instance, target, property)
   const field = prepare.getField()
 
   const serializeCommand = new MappingSerializeCommand(mergedOptions, field.name)
-  const deserializeCommand = new MappingDeserializeCommand(mergedOptions, field.name)
 
   field.append(COMMAND_SERIALIZE_KEY, serializeCommand)
+}
+
+export const Deserialize: MappingDecorator = options => (target, property) => {
+  const mergedOptions: MappingOptions = { ...options, path: options?.path ?? property.toString() }
+  const prepare = new Prepare(MetadataContext.instance, target, property)
+  const field = prepare.getField()
+
+  const deserializeCommand = new MappingDeserializeCommand(mergedOptions, field.name)
+
   field.append(COMMAND_DESERIALIZE_KEY, deserializeCommand)
 }
 
