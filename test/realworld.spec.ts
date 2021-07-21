@@ -1,3 +1,5 @@
+/// <reference types="../typings/model" />
+
 import { DataModel, Mapping } from '../src'
 import { MetadataContext } from '../src/metadata/MetadataContext'
 
