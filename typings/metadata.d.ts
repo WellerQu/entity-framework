@@ -30,9 +30,6 @@ namespace metadata {
     getFields(): Field[]
     setField(field: Field): void
 
-    setResource(id: Resource['id'], resource: Resource): void
-    getResource(id: Resource['id']): Resource | undefined
-
     createInstance<T extends model.DataModel>(data?: model.Data): T
   }
 

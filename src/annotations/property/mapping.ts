@@ -3,7 +3,7 @@ import { Accessor } from '../../accessor/Accessor'
 
 import { MetadataContext } from '../../metadata/MetadataContext'
 import { Prepare } from './Prepare'
-import { COMMAND_DESERIALIZE_KEY, COMMAND_SERIALIZE_KEY } from '../constants'
+import { COMMAND_DESERIALIZE_KEY, COMMAND_SERIALIZE_KEY } from '../../metadata/constants'
 
 type MappingOptions = {
   /**
