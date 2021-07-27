@@ -1,6 +1,6 @@
 {
   "name": "entity-framework",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "description": "实体数据框架",
   "main": "dist/index.js",
   "typings": "dist",
