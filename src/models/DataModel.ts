@@ -7,7 +7,7 @@ export abstract class DataModel implements model.DataModel {
   protected doDeSerialize?: (data: model.Data) => void
 
   // eslint-disable-next-line @typescript-eslint/ban-types
-  protected static isInheritDataModel(target: Object): boolean {
+  protected static isInheritDataModel(target: Object | null): boolean {
     let prototype = target
 
     while(prototype !== null) {
