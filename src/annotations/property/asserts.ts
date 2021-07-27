@@ -1,7 +1,7 @@
 import { MetadataContext } from '../../metadata/MetadataContext'
 import { Command } from '../../commands/Command'
 import { Prepare } from './Prepare'
-import { COMMAND_DESERIALIZE_KEY, COMMAND_SERIALIZE_KEY } from '../constants'
+import { COMMAND_DESERIALIZE_KEY, COMMAND_SERIALIZE_KEY } from '../../metadata/constants'
 
 type AssertDecorator = (msg?: string) => PropertyDecorator
 type AssertValidator = (value: unknown, message: string) => void
