@@ -286,59 +286,6 @@ expect(res.others).toBeUndefined()
 
   在 `Serialize` 或 `Deserialize` 时断言实例字段不会为 `null` 或 `undefined`, 断言失败时将 `msg` 信息以 `throw new Error(msg)` 的形式抛出. 等价于同时使用 `@NotBeNull() @NotBeUndefined()`
 
-### 资源注解
-
-  映射服务端 API 地址
-
-- `@Resource(url: string, id: string | symbol)`
-
-  ```typescript
-  @Resource('/v1/api/create', 'create')
-  class MetricPost extends RequestBean {
-    @Mapping({ path: 'metricId' })
-    id?: string
-    @Mapping({ path: 'metricName' })
-    name?: string
-  }
-  ```
-
-  上述示例中, `RequestBean` 是一个实现了 `fetch` 抽象方法的 `ResourceModel`
-
-  ```typescript
-  class RequestBean extends ResourceModel {
-    // @override
-    protected fetch<T>(url: string, options: RequestOptions): Promise<T> {
-      // 发起请求
-      return Promise.resolve<T>({ /* 返回数据 */})
-    }
-  }
-  ```
-
-  而 `ResourceModel` 提供了 `get`, `post`, `put`, `patch`, `delete` 五个方法, 对应着`http method`谓词. 以及一个 `setHeaders`
-  设置 `http headers` 的机会.
-
-  | API | 参数说明 |
-  | -- | -- |
-  | `setHeaders(headers: HeadersInit)` | 设置 Http 头字段 |
-  | `get<T>(id: string, ResponseModel?: { new(): model.DataModel }): Promise<T>` | 以 GET 的方式发起请求 |
-  | `post<T>(id: string, ResponseModel?: { new(): model.DataModel }): Promise<T>` | 以 POST 的方式发起请求 |
-  | `put<T>(id: string, ResponseModel?: { new(): model.DataModel }): Promise<T>` | 以 PUT 的方式发起请求 |
-  | `patch<T>(id: string, ResponseModel?: { new(): model.DataModel }): Promise<T>` | 以 PATCH 的方式发起请求 |
-  | `delete<T>(id: string, ResponseModel?: { new(): model.DataModel }): Promise<T>` | 以 DELETE 的方式发起请求 |
-
-  ```typescript
-  const bean = new MetricPost()
-  bean.id = '123'
-  bean.name = 'bean'
-
-  bean.post('create', Metric)
-  ```
-
-  当调用 `post` 方法时, `bean` 实例上的数据会按照`@Mapping`注解的映射规则, 序列化为特定的格式填充在 `RequestOptions` 的 `body` 字段上.
-  在请求返回后, 会根据调用 `post` 方法时是否传递过模型来决定是否自动反序列化请求返回的响应数据. 其它方法与 `post` 类似.
-
-  更多用法请参考测试用例 `test/resource.spec.ts`
-
 ## 自定义序列化与反序列化
 
   使用 `@Mapping()` 注解的自动序列化与反序列化无法覆盖某些特殊场景, 此时需要在`DataModel`派生类构造函数中编写自定义序列化函数(`doSerialize`)与反序列化函数(`doDeSerialize`). **一旦使用了自定义函数**, 则忽略所有注解.

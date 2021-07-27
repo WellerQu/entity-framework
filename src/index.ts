@@ -3,4 +3,3 @@ export { NotBeNull, NotBeEmpty, NotBeUndefined } from './annotations/property/as
 export { Resource } from './annotations/object/resource'
 
 export { DataModel } from './models/DataModel'
-export { ResourceModel } from './models/ResourceModel'
