@@ -1,4 +1,4 @@
-import { COMMAND_DESERIALIZE_KEY, COMMAND_SERIALIZE_KEY } from '../annotations/constants'
+import { COMMAND_DESERIALIZE_KEY, COMMAND_SERIALIZE_KEY } from '../metadata/constants'
 import { BatchExecutor } from '../commands/BatchExecutor'
 import { MetadataContext } from '../metadata/MetadataContext'
 
