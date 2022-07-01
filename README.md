@@ -81,10 +81,6 @@ expect(res.others).toBeUndefined()
 
   命令分为序列化命令与反序列化命令, 在执行序列化操作时, 所有的序列化命令按优先级(priority)升序执行; 执行反序列化操作时, 所有的反序列化命令按优先级(priority)升序执行.
 
-- 资源 Resource
-
-  映射服务端提供的 API 接口
-
 - 数据访问路径 DataAccessorPath
 
   描述数据在映射数据结构中所在位置的拥有特定语法的的字符串.
