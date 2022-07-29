@@ -2,9 +2,6 @@ import { COMMAND_DESERIALIZE_KEY, COMMAND_SERIALIZE_KEY } from '../metadata/cons
 import { BatchExecutor } from '../commands/BatchExecutor'
 import { MetadataContext } from '../metadata/MetadataContext'
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type MappingData<T extends Object> = { [key in keyof T]: T[key] }
-
 export abstract class DataModel implements model.DataModel {
   protected doSerialize?: () => model.Data
   protected doDeSerialize?: (data: model.Data) => void
@@ -71,7 +68,7 @@ export abstract class DataModel implements model.DataModel {
     }
   }
 
-  fillModel<T extends DataModel>(source: Partial<MappingData<T>>): this {
+  fillModel<T extends DataModel>(source: Partial<model.MappingData<T>>): this {
     Reflect.ownKeys(source)
     .forEach(key => {
       const value = Reflect.get(source, key)
