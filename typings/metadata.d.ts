@@ -17,12 +17,6 @@ namespace metadata {
     clear(): void
   }
 
-  export type Resource = {
-    id: string | symbol
-    url: string,
-    ResponseType?: { new(): model.DataModel }
-  }
-
   export interface Entity extends Metadata {
     readonly name: string
 
