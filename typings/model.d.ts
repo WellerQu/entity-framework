@@ -2,9 +2,6 @@ namespace model {
   // 变相的表达了 any , 233333
   export type Data = Record<string, Data>
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  export type MappingData<T extends Object> = { [key in keyof T]: T[key] }
-
   export interface DataModel {
     /**
      * 序列化

@@ -68,7 +68,7 @@ export abstract class DataModel implements model.DataModel {
     }
   }
 
-  fillModel<T extends DataModel>(source: Partial<model.MappingData<T>>): this {
+  fillModel<T extends DataModel>(source: Partial<T>): this {
     Reflect.ownKeys(source)
     .forEach(key => {
       const value = Reflect.get(source, key)
